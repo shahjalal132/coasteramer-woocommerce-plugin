@@ -1,0 +1,47 @@
+<?php
+
+/*
+ * Plugin Name:       coasteramer-api
+ * Plugin URI:        #
+ * Description:       Coasteramer API
+ * Version:           1.0.0
+ * Requires at least: 5.2
+ * Requires PHP:      7.2
+ * Author:            Imjol
+ * Author URI:        https://imjol.com/
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Update URI:        https://example.com/my-plugin/
+ */
+
+if ( !defined( 'WPINC' ) ) {
+    die;
+}
+
+// Define plugin path
+if ( !defined( 'COASTERAMER_PLUGIN_PATH' ) ) {
+    define( 'COASTERAMER_PLUGIN_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
+}
+
+// Define plugin uri
+if ( !defined( 'COASTERAMER_PLUGIN_URI' ) ) {
+    define( 'COASTERAMER_PLUGIN_URI', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
+}
+
+// Create wp_sync_products db table when plugin activate
+register_activation_hook( __FILE__, 'coasteramer_db_products_table_create' );
+
+// Remove wp_sync_products db table when plugin deactivate
+register_deactivation_hook( __FILE__, 'coasteramer_db_products_table_remove' );
+
+// Create wp_sync_category db table when plugin activate
+register_activation_hook( __FILE__, 'coasteramer_db_category_table_create' );
+
+// Remove wp_sync_category db table when plugin deactivate
+register_deactivation_hook( __FILE__, 'coasteramer_db_category_table_remove' );
+
+// Including requirements files
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_table.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_categories_table.php';
+
+?>

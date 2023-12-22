@@ -43,5 +43,7 @@ register_deactivation_hook( __FILE__, 'coasteramer_db_category_table_remove' );
 // Including requirements files
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_categories_table.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_insert_products.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_insert_categories.php';
 
 ?>

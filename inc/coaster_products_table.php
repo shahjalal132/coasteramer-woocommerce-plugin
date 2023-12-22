@@ -11,7 +11,7 @@ function coasteramer_db_products_table_create() {
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id INT AUTO_INCREMENT,
         operation_type VARCHAR(255) NOT NULL,
-        operation_value VARCHAR(255) NOT NULL,
+        operation_value TEXT NOT NULL,
         status VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

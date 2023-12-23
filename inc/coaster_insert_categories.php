@@ -27,7 +27,7 @@ function add_categories_from_api_callback( $atts = [] ) {
 
                 foreach ( $category['SubCategoryList'] as $subcategory ) {
                     $subcategory_name = $subcategory['SubCategoryName'];
-                    $subcategory_slug = $subcategory['SubCategoryCode'];
+                    $subcategory_slug = $subcategory_name;
 
                     // Insert subcategory to WooCommerce under its parent category
                     $new_subcategory = wp_insert_term( $subcategory_name, 'product_cat', [
@@ -42,7 +42,7 @@ function add_categories_from_api_callback( $atts = [] ) {
                         // Loop through pieces and add them as sub-subcategories under the subcategory
                         foreach ( $subcategory['PieceList'] as $piece ) {
                             $piece_name = $piece['PieceName'];
-                            $piece_slug = $piece['PieceCode'];
+                            $piece_slug = $piece_name;
 
                             // Insert piece as a sub-subcategory (nested under subcategory)
                             $new_piece = wp_insert_term( $piece_name, 'product_cat', [

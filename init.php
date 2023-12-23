@@ -45,5 +45,7 @@ require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_categories_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_insert_products.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_insert_categories.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_add_categories.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_categories_from_db.php';
 
 ?>

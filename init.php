@@ -56,6 +56,5 @@ require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_add_categories_to_woocommer
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_add_products_to_woocommerce.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_insert_price_to_db.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_categories_from_db.php';
-// require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_insert_categories.php';
 
 ?>

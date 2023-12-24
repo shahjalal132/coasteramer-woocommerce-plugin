@@ -1,74 +1,71 @@
 <?php
 
 // Product insert to WooCommerce shortcode
-add_shortcode( 'coaster_product_insert_to_woocommerce', 'insert_new_products_to_woocommerce' );
+add_shortcode('coaster_product_insert_to_woocommerce', 'insert_new_products_to_woocommerce');
 
 function insert_new_products_to_woocommerce() {
     ob_start();
 
     global $wpdb;
+
+    // Define table names
     $table_name_products = $wpdb->prefix . 'sync_products';
-    $table_name_prices   = $wpdb->prefix . 'sync_price';
+    $table_name_prices = $wpdb->prefix . 'sync_price';
 
-    $products = $wpdb->get_results( "SELECT * FROM $table_name_products WHERE status = 'pending' LIMIT 1" );
+    // Retrieve pending products from the database
+    $products = $wpdb->get_results("SELECT * FROM $table_name_products WHERE status = 'pending' LIMIT 1");
 
-    foreach ( $products as $product ) {
+    foreach ($products as $product) {
         // Retrieve data from the database record
-        $product_data = json_decode( $product->operation_value, true );
+        $product_data = json_decode($product->operation_value, true);
 
         // Extract product details from the database record
-        $title        = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
-        $description  = isset( $product_data['Description'] ) ? $product_data['Description'] : '';
-        $sku          = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
-        $stock        = isset( $product_data['stock'] ) ? $product_data['stock'] : 0;
-        $manage_stock = $stock > 0 ? 'yes' : 'no';
+        $title = isset($product_data['Name']) ? $product_data['Name'] : '';
+        $description = isset($product_data['Description']) ? $product_data['Description'] : '';
+        $sku = isset($product_data['ProductNumber']) ? $product_data['ProductNumber'] : '';
+        $pictures = isset($product_data['PictureFullURLs']) ? $product_data['PictureFullURLs'] : '';
+        $measurementList = isset($product_data['MeasurementList']) ? $product_data['MeasurementList'] : '';
+        $boxSize = isset($product_data['BoxSize']) ? $product_data['BoxSize'] : '';
 
         // Retrieve the price from the separate table based on product_number
         $price_row = $wpdb->get_row(
-            $wpdb->prepare( "SELECT * FROM $table_name_prices WHERE product_number = %s LIMIT 1", $sku )
+            $wpdb->prepare("SELECT * FROM $table_name_prices WHERE product_number = %s LIMIT 1", $sku)
         );
 
-        // echo '<pre>';
-        // print_r( $price_row );
-        // wp_die();
-
         // Check if a price exists for the product
-        if ( $price_row ) {
-            $price = $price_row->price;
-
-            // echo $price;
-            // wp_die(  );
+        if ($price_row) {
+            $regular_price = $price_row->map;
+            $sale_price = $price_row->price;
 
             // Check if the product already exists
-            $existing_product = wc_get_product_id_by_sku( $sku );
+            $existing_product_id = wc_get_product_id_by_sku($sku);
 
-            $query = new WP_Query( $existing_product );
-
-            if ( $query->have_posts() ) {
-                $product_id = $query->posts[0]->ID;
-                wp_update_post( [
-                    'ID'           => $existing_product,
-                    'post_title'   => $title,
+            if ($existing_product_id) {
+                // Update existing product
+                wp_update_post([
+                    'ID' => $existing_product_id,
+                    'post_title' => $title,
                     'post_content' => $description,
-                    'post_status'  => 'publish',
-                    'post_type'    => 'product',
-                ] );
+                    'post_status' => 'publish',
+                    'post_type' => 'product',
+                ]);
             } else {
-                $product_id = wp_insert_post( [
-                    'post_title'   => $title,
+                // Insert new product
+                $product_id = wp_insert_post([
+                    'post_title' => $title,
                     'post_content' => $description,
-                    'post_status'  => 'publish',
-                    'post_type'    => 'product',
-                ] );
+                    'post_status' => 'publish',
+                    'post_type' => 'product',
+                ]);
 
-                if ( $product_id ) {
-                    wp_set_object_terms( $product_id, 'simple', 'product_type' );
-                    update_post_meta( $product_id, '_visibility', 'visible' );
-                    update_post_meta( $product_id, '_stock_status', 'instock' );
-                    update_post_meta( $product_id, '_regular_price', $price );
-                    update_post_meta( $product_id, '_sku', $sku );
-                    update_post_meta( $product_id, '_manage_stock', $manage_stock );
-                    update_post_meta( $product_id, '_stock', $stock );
+                if ($product_id) {
+                    // Set product details
+                    wp_set_object_terms($product_id, 'simple', 'product_type');
+                    update_post_meta($product_id, '_visibility', 'visible');
+                    update_post_meta($product_id, '_stock_status', 'instock');
+                    update_post_meta($product_id, '_regular_price', $regular_price);
+                    update_post_meta($product_id, '_sale_price', $sale_price);
+                    update_post_meta($product_id, '_sku', $sku);
 
                     // Update the status of the processed product in your database
                     $wpdb->update(

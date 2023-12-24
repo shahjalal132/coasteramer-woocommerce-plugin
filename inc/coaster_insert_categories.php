@@ -1,21 +1,40 @@
 <?php
 
-add_shortcode( 'add_categories_from_api', 'add_categories_from_api_callback' );
+add_shortcode( 'insert_categories_to_woocommerce_from_db', 'add_categories_to_woocommerce_from_db' );
 
-function add_categories_from_api_callback( $atts = [] ) {
+function add_categories_to_woocommerce_from_db() {
     ob_start();
 
-    $api_response    = get_api_category(); // Fetch category data from the API
-    $categories_data = json_decode( $api_response, true ); // Decode the JSON response
+    $categories_response    = fetch_categories_from_db(); // Fetch category data from the DB
+    $categories_data = json_decode( $categories_response, true ); // Decode the JSON response
 
     if ( $categories_data ) {
         foreach ( $categories_data as $category ) {
-            $category_name = $category['CategoryName'];
-            $category_slug = $category_name; // Slug for the category
+
+            // echo '<pre>';
+            // print_r( $category );
+            // wp_die();
+
+            $categories_items = $category['operation_value'];
+
+            $category_value = json_decode( $categories_items, true );
+
+            // echo '<pre>';
+            // print_r( $category_value );
+            // wp_die();
+
+            foreach( $category_value as $value ) {
+                $category_name  = $value['CategoryName'];
+            $category_code  = $value['CategoryCode'];
+            $category_slug  = $category_name; // Slug for the category
+
+            // Initialize $piece_code before the loop
+            $piece_code = '';
 
             // Add category to WooCommerce product categories
             $new_category = wp_insert_term( $category_name, 'product_cat', [
                 'slug' => $category_slug,
+                'description' => $piece_code,
             ] );
 
             if ( !is_wp_error( $new_category ) ) {
@@ -25,7 +44,7 @@ function add_categories_from_api_callback( $atts = [] ) {
                 // Handle subcategories and pieces insertion here
                 // You need to implement logic for subcategories and pieces within this loop
 
-                foreach ( $category['SubCategoryList'] as $subcategory ) {
+                foreach ( $value['SubCategoryList'] as $subcategory ) {
                     $subcategory_name = $subcategory['SubCategoryName'];
                     $subcategory_slug = $subcategory_name;
 
@@ -41,8 +60,10 @@ function add_categories_from_api_callback( $atts = [] ) {
 
                         // Loop through pieces and add them as sub-subcategories under the subcategory
                         foreach ( $subcategory['PieceList'] as $piece ) {
-                            $piece_name = $piece['PieceName'];
-                            $piece_slug = $piece_name;
+                            $piece_name     = $piece['PieceName'];
+                            $piece_code     = $piece['PieceCode'];
+                            // $piece_top_code = $piece_code;
+                            $piece_slug     = $piece_name;
 
                             // Insert piece as a sub-subcategory (nested under subcategory)
                             $new_piece = wp_insert_term( $piece_name, 'product_cat', [
@@ -67,9 +88,9 @@ function add_categories_from_api_callback( $atts = [] ) {
         }
 
         return 'Categories, subcategories, and pieces added successfully';
-    } else {
-        return 'No data retrieved from the API';
-    }
+    } 
+}else {
+    return 'No data retrieved from the API';
 }
 
 ?>

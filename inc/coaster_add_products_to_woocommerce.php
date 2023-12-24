@@ -27,7 +27,6 @@ function insert_new_products_to_woocommerce() {
         $measurementList = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
         $boxSize         = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
 
-        var_dump($pictures);    
         // Retrieve the price from the separate table based on product_number
         $price_row = $wpdb->get_row(
             $wpdb->prepare( "SELECT * FROM $table_name_prices WHERE product_number = %s LIMIT 1", $sku )
@@ -38,7 +37,6 @@ function insert_new_products_to_woocommerce() {
 
             // Extract price details from the database record
             $base_regular_price = $price_row->map;
-            // $base_sale_price    = $price_row->price;
 
             // Calculate the new regular price and sale price with the specified percentages
             $regular_price = round( $base_regular_price * 1.12 ); // Increase by 12%

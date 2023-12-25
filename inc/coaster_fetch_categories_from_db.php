@@ -67,22 +67,12 @@ function fetch_all_categories_from_db() {
                                     'parent' => $subcategory_id, // Assign parent subcategory ID
                                     'description' => $piece_code, // Use $piece_code as sub-subcategory description
                                 ] );
-
-                                if ( is_wp_error( $new_piece ) ) {
-                                    // Handle error when adding pieces
-                                    echo 'Failed to add piece: ' . $new_piece->get_error_message();
-                                }
                             }
                         }
-                    } else {
-                        // Handle error when adding subcategories
-                        echo 'Failed to add subcategory: ' . $new_subcategory->get_error_message();
                     }
                 }
+                return '<h3>Categories and subcategories have been added successfully!</h3>';
             }
-        } else {
-            // Handle error when adding categories
-            echo 'Failed to add category: ' . $new_category->get_error_message();
         }
     }
 

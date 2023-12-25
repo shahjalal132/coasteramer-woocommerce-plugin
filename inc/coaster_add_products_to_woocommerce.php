@@ -4,8 +4,10 @@
 add_shortcode( 'coaster_product_insert_to_woocommerce', 'insert_new_products_to_woocommerce' );
 
 function insert_new_products_to_woocommerce() {
+    // Start output buffering
     ob_start();
 
+    // Get global $wpdb object
     global $wpdb;
 
     // Define table names
@@ -15,15 +17,18 @@ function insert_new_products_to_woocommerce() {
     // Retrieve pending products from the database
     $products = $wpdb->get_results( "SELECT * FROM $table_name_products WHERE status = 'pending' LIMIT 1" );
 
+    // Loop through each pending product
     foreach ( $products as $product ) {
 
+        // Decode the JSON data stored in the database
         $product_data = json_decode( $product->operation_value, true );
 
-        // Extract product details from the database record
+        // Extract product details from the decoded data
         $title           = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
         $description     = isset( $product_data['Description'] ) ? $product_data['Description'] : '';
         $sku             = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
         $pictures        = isset( $product_data['PictureFullURLs'] ) ? $product_data['PictureFullURLs'] : '';
+        $image_urls      = explode( ',', $pictures );
         $measurementList = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
         $boxSize         = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
 
@@ -38,7 +43,7 @@ function insert_new_products_to_woocommerce() {
             // Extract price details from the database record
             $base_regular_price = $price_row->map;
 
-            // Calculate the new regular price and sale price with the specified percentages
+            // Calculate the new regular price and sale price with specified percentages
             $regular_price = round( $base_regular_price * 1.12 ); // Increase by 12%
             $sale_price    = round( $base_regular_price * 1.024 ); // Increase by 2.4%
 
@@ -81,25 +86,46 @@ function insert_new_products_to_woocommerce() {
                     );
 
                     // Set product images
-                    if ( !empty( $pictures ) && is_array( $pictures ) ) {
-                        $attachment_ids = [];
+                    foreach ( $image_urls as $image_url ) {
+                        // Extract image name
+                        $image_name = basename( $image_url );
+                        // Get WordPress upload directory
+                        $upload_dir = wp_upload_dir();
 
-                        foreach ( $pictures as $picture_url ) {
-                            // Download image and add it to the media library
-                            $image_id = media_sideload_image( $picture_url, $product_id, $title );
+                        // Download the image from URL and save it to the upload directory
+                        $image_data = file_get_contents( $image_url );
+                        $image_file = $upload_dir['path'] . '/' . $image_name;
+                        file_put_contents( $image_file, $image_data );
 
-                            // Check if the image was added successfully
-                            if ( !is_wp_error( $image_id ) ) {
-                                $attachment_ids[] = $image_id;
-                            }
+                        // Prepare image data to be attached to the product
+                        $file_path = $upload_dir['path'] . '/' . $image_name;
+                        $file_name = basename( $file_path );
+
+                        $attachment = [
+                            'post_mime_type' => mime_content_type( $file_path ),
+                            'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
+                            'post_content'   => '',
+                            'post_status'    => 'inherit',
+                        ];
+
+                        // Insert the image as an attachment
+                        $attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
+
+                        // Add image to the product gallery
+                        if ( $attach_id && !is_wp_error( $attach_id ) ) {
+                            // Set the product image
+                            set_post_thumbnail( $product_id, $attach_id );
+
+                            // Set gallery
+                            $gallery_ids = get_post_meta( $product_id, '_product_image_gallery', true );
+                            $gallery_ids = explode( ',', $gallery_ids );
+
+                            // Add the new image to the existing gallery
+                            $gallery_ids[] = $attach_id;
+
+                            // Update the product gallery
+                            update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
                         }
-
-                        // Set the first image as the product thumbnail
-                        if ( !empty( $attachment_ids ) ) {
-                            set_post_thumbnail( $product_id, $attachment_ids[0] );
-                            update_post_meta( $product_id, '_product_image_gallery', implode( ',', $attachment_ids ) );
-                        }
-
                     }
                 }
 
@@ -114,13 +140,14 @@ function insert_new_products_to_woocommerce() {
                 if ( function_exists( 'w3tc_flush_all' ) ) {
                     w3tc_flush_all();
                 }
-
             }
         }
     }
 
+    // Output success message
     echo '<h4>Products imported successfully to WooCommerce</h4>';
+
+    // Return buffered content
     return ob_get_clean();
 }
-
 ?>

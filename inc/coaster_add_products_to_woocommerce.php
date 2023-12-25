@@ -23,14 +23,21 @@ function insert_new_products_to_woocommerce() {
         // Decode the JSON data stored in the database
         $product_data = json_decode( $product->operation_value, true );
 
+        // echo '<pre>';
+        // print_r( $product_data );
+        // wp_die();
+
         // Extract product details from the decoded data
-        $title           = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
-        $description     = isset( $product_data['Description'] ) ? $product_data['Description'] : '';
-        $sku             = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
-        $pictures        = isset( $product_data['PictureFullURLs'] ) ? $product_data['PictureFullURLs'] : '';
-        $image_urls      = explode( ',', $pictures );
-        $measurementList = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
-        $boxSize         = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
+        $title            = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
+        $description      = isset( $product_data['Description'] ) ? $product_data['Description'] : '';
+        $sku              = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
+        $pictures         = isset( $product_data['PictureFullURLs'] ) ? $product_data['PictureFullURLs'] : '';
+        $image_urls       = explode( ',', $pictures );
+        $measurementList  = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
+        $boxSize          = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
+        $category_code    = isset( $product_data['CategoryCode'] ) ? $product_data['CategoryCode'] : '';
+        $subcategory_code = isset( $product_data['SubCategoryCode'] ) ? $product_data['SubCategoryCode'] : '';
+        $piece_code       = isset( $product_data['PieceCode'] ) ? $product_data['PieceCode'] : '';
 
         // Retrieve the price from the separate table based on product_number
         $price_row = $wpdb->get_row(
@@ -59,6 +66,12 @@ function insert_new_products_to_woocommerce() {
                     'post_status'  => 'publish',
                     'post_type'    => 'product',
                 ] );
+
+                // Set product categories
+                wp_set_object_terms( $existing_product_id, $category_code, 'product_cat' );
+                wp_set_object_terms( $existing_product_id, $subcategory_code, 'product_cat' );
+                wp_set_object_terms( $existing_product_id, $piece_code, 'product_cat' );
+
             } else {
                 // Insert new product
                 $product_id = wp_insert_post( [
@@ -67,6 +80,11 @@ function insert_new_products_to_woocommerce() {
                     'post_status'  => 'publish',
                     'post_type'    => 'product',
                 ] );
+
+                // Set product categories
+                wp_set_object_terms( $existing_product_id, $category_code, 'product_cat' );
+                wp_set_object_terms( $existing_product_id, $subcategory_code, 'product_cat' );
+                wp_set_object_terms( $existing_product_id, $piece_code, 'product_cat' );
 
                 if ( $product_id ) {
                     // Set product details
@@ -84,6 +102,21 @@ function insert_new_products_to_woocommerce() {
                         ['status' => 'completed'],
                         ['id' => $product->id]
                     );
+
+                    // Set product dimensions
+                    foreach ( $measurementList as $measurement ) {
+                        $length   = isset( $measurement['Length'] ) ? $measurement['Length'] : '';
+                        $width    = isset( $measurement['Width'] ) ? $measurement['Width'] : '';
+                        $height   = isset( $measurement['Height'] ) ? $measurement['Height'] : '';
+                        $diameter = isset( $measurement['Diameter'] ) ? $measurement['Diameter'] : '';
+                        $weight   = isset( $measurement['Weight'] ) ? $measurement['Weight'] : '';
+
+                        update_post_meta( $product_id, '_length', $length );
+                        update_post_meta( $product_id, '_width', $width );
+                        update_post_meta( $product_id, '_height', $height );
+                        update_post_meta( $product_id, '_diameter', $diameter );
+                        update_post_meta( $product_id, '_weight', $weight );
+                    }
 
                     // Set product images
                     foreach ( $image_urls as $image_url ) {

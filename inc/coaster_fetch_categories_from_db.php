@@ -1,4 +1,9 @@
 <?php
+/**
+ * Fetches all categories from the database and adds them to WooCommerce product categories.
+ *
+ * @return string Output buffer containing any error messages.
+ */
 function fetch_all_categories_from_db() {
     ob_start();
 
@@ -17,7 +22,7 @@ function fetch_all_categories_from_db() {
         $category_name = $category_array['CategoryName'];
         $category_slug = sanitize_title( $category_name );
 
-        // Insert category to WooCommerce product categories
+        // Insert category into WooCommerce product categories
         $new_category = wp_insert_term( $category_name, 'product_cat', [
             'slug'        => $category_slug,
             'description' => $category_code,
@@ -33,13 +38,10 @@ function fetch_all_categories_from_db() {
                 foreach ( $category_array['SubCategoryList'] as $subcategory ) {
 
                     $subcategory_name = $subcategory['SubCategoryName'];
+                    $subcategory_code = $subcategory['SubCategoryCode'];
                     $subcategory_slug = sanitize_title( $subcategory_name );
 
-                    // Check if "PieceCode" key exists in the $subcategory array
-                    // $subcategory_code = isset( $subcategory['PieceCode'] ) ? $subcategory['PieceCode'] : '';
-                    $subcategory_code = isset( $piece_code ) ? $piece_code : '';
-
-                    // Insert subcategory to WooCommerce under its parent category
+                    // Insert subcategory into WooCommerce under its parent category
                     $new_subcategory = wp_insert_term( $subcategory_name, 'product_cat', [
                         'slug'   => $subcategory_slug,
                         'parent' => $category_id, // Assign parent category ID
@@ -52,7 +54,7 @@ function fetch_all_categories_from_db() {
 
                         // Loop through pieces and add them as sub-subcategories under the subcategory
                         if ( isset( $subcategory['PieceList'] ) && is_array( $subcategory['PieceList'] ) ) {
-                            
+
                             foreach ( $subcategory['PieceList'] as $piece ) {
 
                                 $piece_name = $piece['PieceName'];
@@ -63,6 +65,7 @@ function fetch_all_categories_from_db() {
                                 $new_piece = wp_insert_term( $piece_name, 'product_cat', [
                                     'slug'   => $piece_slug,
                                     'parent' => $subcategory_id, // Assign parent subcategory ID
+                                    'description' => $piece_code, // Use $piece_code as sub-subcategory description
                                 ] );
 
                                 if ( is_wp_error( $new_piece ) ) {
@@ -86,10 +89,12 @@ function fetch_all_categories_from_db() {
     return ob_get_clean();
 }
 
+// Shortcode to trigger the category fetch process
 add_shortcode( 'fetch_all_categories', 'fetch_all_categories_from_db' );
 
-// Additional functions and shortcodes can be added here
-
+/**
+ * Deletes all WooCommerce product categories.
+ */
 function delete_woocommerce_category_callback() {
     // Load WooCommerce functions
     if ( class_exists( 'WooCommerce' ) ) {
@@ -107,5 +112,6 @@ function delete_woocommerce_category_callback() {
     echo 'All product categories have been deleted.';
 }
 
+// Shortcode to trigger the category deletion process
 add_shortcode( 'delete_woocommerce_category', 'delete_woocommerce_category_callback' );
 ?>

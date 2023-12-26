@@ -16,8 +16,9 @@ function insert_new_products_to_woocommerce() {
     global $wpdb;
 
     // Define table names
-    $table_name_products = $wpdb->prefix . 'sync_products';
-    $table_name_prices   = $wpdb->prefix . 'sync_price';
+    $table_name_products  = $wpdb->prefix . 'sync_products';
+    $table_name_prices    = $wpdb->prefix . 'sync_price';
+    $table_name_inventory = $wpdb->prefix . 'sync_inventory';
 
     // Retrieve pending products from the database
     $products = $wpdb->get_results( "SELECT * FROM $table_name_products WHERE status = 'pending' LIMIT 1" );
@@ -27,10 +28,6 @@ function insert_new_products_to_woocommerce() {
 
         // Decode the JSON data stored in the database
         $product_data = json_decode( $product->operation_value, true );
-
-        // echo '<pre>';
-        // print_r( $product_data );
-        // wp_die();
 
         // Extract product details from the decoded data
         $title            = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
@@ -167,6 +164,28 @@ function insert_new_products_to_woocommerce() {
                             update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
                         }
                     }
+
+                    // Fetch inventory information from the database
+                    $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" );
+
+                    foreach ( $total_inventory as $inventory ) {
+                        // Extract relevant information from the database result
+                        $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
+                        $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
+
+                        // Update product meta data in WordPress
+                        update_post_meta( $product_id, '_stock', $inventory_qty );
+                        update_post_meta( $product_id, '_stock_status', 'instock' );
+                        update_post_meta( $product_id, '_manage_stock', 'yes' );
+                    }
+
+                    // Mark the inventory update as completed in the database
+                    $wpdb->update(
+                        $table_name_inventory,
+                        ['status' => 'completed'],
+                        ['product_number' => $Product_num]
+                    );
+
                 }
 
                 // Flush WooCommerce transients

@@ -3,6 +3,11 @@
 // Product insert to WooCommerce shortcode
 add_shortcode( 'coaster_product_insert_to_woocommerce', 'insert_new_products_to_woocommerce' );
 
+/**
+ * Inserts new products to WooCommerce.
+ *
+ * @return string The success message after importing the products.
+ */
 function insert_new_products_to_woocommerce() {
     // Start output buffering
     ob_start();
@@ -39,6 +44,9 @@ function insert_new_products_to_woocommerce() {
         $subcategory_code = isset( $product_data['SubCategoryCode'] ) ? $product_data['SubCategoryCode'] : '';
         $piece_code       = isset( $product_data['PieceCode'] ) ? $product_data['PieceCode'] : '';
 
+        // extract category name
+        $category_name = getCategoryByCode( $category_code );
+
         // Retrieve the price from the separate table based on product_number
         $price_row = $wpdb->get_row(
             $wpdb->prepare( "SELECT * FROM $table_name_prices WHERE product_number = %s LIMIT 1", $sku )
@@ -67,10 +75,10 @@ function insert_new_products_to_woocommerce() {
                     'post_type'    => 'product',
                 ] );
 
-                // Set product categories
-                wp_set_object_terms( $existing_product_id, $category_code, 'product_cat' );
-                wp_set_object_terms( $existing_product_id, $subcategory_code, 'product_cat' );
-                wp_set_object_terms( $existing_product_id, $piece_code, 'product_cat' );
+                if ( $category_name ) {
+                    // Update product categories
+                    wp_set_object_terms( $existing_product_id, $category_name, 'product_cat' );
+                }
 
             } else {
                 // Insert new product
@@ -81,11 +89,6 @@ function insert_new_products_to_woocommerce() {
                     'post_type'    => 'product',
                 ] );
 
-                // Set product categories
-                wp_set_object_terms( $existing_product_id, $category_code, 'product_cat' );
-                wp_set_object_terms( $existing_product_id, $subcategory_code, 'product_cat' );
-                wp_set_object_terms( $existing_product_id, $piece_code, 'product_cat' );
-
                 if ( $product_id ) {
                     // Set product details
                     wp_set_object_terms( $product_id, 'simple', 'product_type' );
@@ -95,6 +98,10 @@ function insert_new_products_to_woocommerce() {
                     update_post_meta( $product_id, '_sale_price', $sale_price );
                     update_post_meta( $product_id, '_price', $sale_price );
                     update_post_meta( $product_id, '_sku', $sku );
+
+                    // Set product categories
+
+                    wp_set_object_terms( $product_id, $category_name, 'product_cat' );
 
                     // Update the status of the processed product in your database
                     $wpdb->update(

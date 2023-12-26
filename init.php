@@ -14,9 +14,6 @@
  * Update URI:        https://example.com/my-plugin/
  */
 
-//  call the rout first
- require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_routs_api.php';
-
 if ( !defined( 'WPINC' ) ) {
     die;
 }
@@ -56,6 +53,7 @@ register_activation_hook( __FILE__, 'coaster_sync_inventory_table' );
 register_deactivation_hook( __FILE__, 'inventory_table_deactivation' );
 
 // Including requirements files
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_routs_api.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_categories_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_price_table.php';

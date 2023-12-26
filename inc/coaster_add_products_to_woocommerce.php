@@ -42,7 +42,25 @@ function insert_new_products_to_woocommerce() {
         $piece_code       = isset( $product_data['PieceCode'] ) ? $product_data['PieceCode'] : '';
 
         // extract category name
-        $category_name = getCategoryByCode( $category_code );
+        $categories_infos     = getCategoryByCode( $category_code );
+        $parent_category_name = $categories_infos['category_name'] ?? '';
+        $parent_category_id   = $categories_infos['category_id'] ?? '';
+
+        // extract subcategory information
+        $subcategories = get_subcategory_by_parent_category_code( $parent_category_id );
+
+        // Check if the subcategory exists, and if not, insert it
+        $subcategory_name = '';
+
+        foreach ( $subcategories as $subcategory ) {
+
+            if ( $subcategory instanceof WP_Term && $subcategory->description === $subcategory_code ) {
+                $subcategory_name = $subcategory->name; // Return the category name if code matches
+                $subcategory_id   = $subcategory->term_id;
+            }
+        }
+
+        // return "parent category: " . $parent_category_name . " and subcategory name: " . $subcategory_name;
 
         // Retrieve the price from the separate table based on product_number
         $price_row = $wpdb->get_row(
@@ -63,6 +81,13 @@ function insert_new_products_to_woocommerce() {
             $existing_product_id = wc_get_product_id_by_sku( $sku );
 
             if ( $existing_product_id ) {
+                
+                // Update the status of the processed product in your database
+                $wpdb->update(
+                    $table_name_products,
+                    ['status' => 'completed'],
+                    ['id' => $product->id]
+                );
                 // Update existing product
                 wp_update_post( [
                     'ID'           => $existing_product_id,
@@ -72,12 +97,25 @@ function insert_new_products_to_woocommerce() {
                     'post_type'    => 'product',
                 ] );
 
-                if ( $category_name ) {
+                if ( $parent_category_name ) {
                     // Update product categories
-                    wp_set_object_terms( $existing_product_id, $category_name, 'product_cat' );
+                    wp_set_object_terms( $existing_product_id, $parent_category_name, 'product_cat' );
                 }
 
+                if ( $subcategory_name ) {
+                    // Update product categories
+                    wp_set_object_terms( $existing_product_id, $subcategory_name, 'product_cat' );
+                }
+
+
             } else {
+                
+                // Update the status of the processed product in your database
+                $wpdb->update(
+                    $table_name_products,
+                    ['status' => 'completed'],
+                    ['id' => $product->id]
+                );
                 // Insert new product
                 $product_id = wp_insert_post( [
                     'post_title'   => $title,
@@ -98,14 +136,10 @@ function insert_new_products_to_woocommerce() {
 
                     // Set product categories
 
-                    wp_set_object_terms( $product_id, $category_name, 'product_cat' );
+                    wp_set_object_terms( $product_id, $parent_category_name, 'product_cat' );
 
-                    // Update the status of the processed product in your database
-                    $wpdb->update(
-                        $table_name_products,
-                        ['status' => 'completed'],
-                        ['id' => $product->id]
-                    );
+                    wp_set_object_terms( $product_id, $subcategory_name, 'product_cat', true );
+
 
                     // Set product dimensions
                     foreach ( $measurementList as $measurement ) {
@@ -166,25 +200,25 @@ function insert_new_products_to_woocommerce() {
                     }
 
                     // Fetch inventory information from the database
-                    $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" );
+                    /* $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" ); */
 
-                    foreach ( $total_inventory as $inventory ) {
-                        // Extract relevant information from the database result
-                        $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
-                        $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
+                    /*foreach ( $total_inventory as $inventory ) {
+                // Extract relevant information from the database result
+                $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
+                $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
 
-                        // Update product meta data in WordPress
-                        update_post_meta( $product_id, '_stock', $inventory_qty );
-                        update_post_meta( $product_id, '_stock_status', 'instock' );
-                        update_post_meta( $product_id, '_manage_stock', 'yes' );
-                    }
+                // Update product meta data in WordPress
+                update_post_meta( $product_id, '_stock', $inventory_qty );
+                update_post_meta( $product_id, '_stock_status', 'instock' );
+                update_post_meta( $product_id, '_manage_stock', 'yes' );
+                }
 
-                    // Mark the inventory update as completed in the database
-                    $wpdb->update(
-                        $table_name_inventory,
-                        ['status' => 'completed'],
-                        ['product_number' => $Product_num]
-                    );
+                // Mark the inventory update as completed in the database
+                $wpdb->update(
+                $table_name_inventory,
+                ['status' => 'completed'],
+                ['product_number' => $Product_num]
+                ); */
 
                 }
 

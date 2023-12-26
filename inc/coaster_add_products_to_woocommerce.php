@@ -81,7 +81,7 @@ function insert_new_products_to_woocommerce() {
             $existing_product_id = wc_get_product_id_by_sku( $sku );
 
             if ( $existing_product_id ) {
-                
+
                 // Update the status of the processed product in your database
                 $wpdb->update(
                     $table_name_products,
@@ -107,9 +107,8 @@ function insert_new_products_to_woocommerce() {
                     wp_set_object_terms( $existing_product_id, $subcategory_name, 'product_cat' );
                 }
 
-
             } else {
-                
+
                 // Update the status of the processed product in your database
                 $wpdb->update(
                     $table_name_products,
@@ -139,7 +138,6 @@ function insert_new_products_to_woocommerce() {
                     wp_set_object_terms( $product_id, $parent_category_name, 'product_cat' );
 
                     wp_set_object_terms( $product_id, $subcategory_name, 'product_cat', true );
-
 
                     // Set product dimensions
                     foreach ( $measurementList as $measurement ) {
@@ -200,25 +198,25 @@ function insert_new_products_to_woocommerce() {
                     }
 
                     // Fetch inventory information from the database
-                    /* $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" ); */
+                    $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" );
 
-                    /*foreach ( $total_inventory as $inventory ) {
-                // Extract relevant information from the database result
-                $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
-                $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
+                    foreach ( $total_inventory as $inventory ) {
+                        // Extract relevant information from the database result
+                        $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
+                        $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
 
-                // Update product meta data in WordPress
-                update_post_meta( $product_id, '_stock', $inventory_qty );
-                update_post_meta( $product_id, '_stock_status', 'instock' );
-                update_post_meta( $product_id, '_manage_stock', 'yes' );
-                }
+                        // Update product meta data in WordPress
+                        update_post_meta( $product_id, '_stock', $inventory_qty );
+                        update_post_meta( $product_id, '_stock_status', 'instock' );
+                        update_post_meta( $product_id, '_manage_stock', 'yes' );
+                    }
 
-                // Mark the inventory update as completed in the database
-                $wpdb->update(
-                $table_name_inventory,
-                ['status' => 'completed'],
-                ['product_number' => $Product_num]
-                ); */
+                    // Mark the inventory update as completed in the database
+                    $wpdb->update(
+                        $table_name_inventory,
+                        ['status' => 'completed'],
+                        ['product_number' => $Product_num]
+                    );
 
                 }
 

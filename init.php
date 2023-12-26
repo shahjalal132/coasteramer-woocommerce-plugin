@@ -63,5 +63,6 @@ require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_insert_price_to_db.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_categories_from_db.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_parent_cat_from_woo.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_inventory_table.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_inventory_from_api_and_insert.php';
 
 ?>

@@ -19,10 +19,10 @@ function coaster_products_api() {
 
 // callback function for api endpoint to get products from api and add them to database
 function coaster_products_api_callback( $request ) {
-    return coaster_products_shortcode();
+    return insert_products_to_db_callback();
 }
 
 // callback function for api endpoint to get products from database add add them to woocommerce
 function coaster_add_new_product_from_db_callback( $request ) {
-    return coaster_add_new_product_from_db();
+    return insert_new_products_to_woocommerce_callback();
 }

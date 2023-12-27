@@ -27,11 +27,13 @@ function insert_new_products_to_woocommerce_callback() {
         $product_data = json_decode( $product->operation_value, true );
 
         // Extract product details from the decoded data
-        $title            = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
-        $description      = isset( $product_data['Description'] ) ? $product_data['Description'] : '';
-        $sku              = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
-        $pictures         = isset( $product_data['PictureFullURLs'] ) ? $product_data['PictureFullURLs'] : '';
-        $image_urls       = explode( ',', $pictures );
+        $title       = isset( $product_data['Name'] ) ? $product_data['Name'] : '';
+        $description = isset( $product_data['Description'] ) ? $product_data['Description'] : '';
+        $sku         = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
+        $pictures    = isset( $product_data['PictureFullURLs'] ) ? $product_data['PictureFullURLs'] : '';
+        $image_urls  = explode( ',', $pictures );
+        // limit images_urls to first 5 images
+        $image_urls       = array_slice( $image_urls, 0, 5 );
         $measurementList  = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
         $boxSize          = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
         $category_code    = isset( $product_data['CategoryCode'] ) ? $product_data['CategoryCode'] : '';
@@ -45,6 +47,9 @@ function insert_new_products_to_woocommerce_callback() {
 
         // extract subcategory information
         $subcategories = get_subcategory_by_parent_category_code( $parent_category_id );
+
+        // Brand name
+        $brand_name = 'Coaster';
 
         // Check if the subcategory exists, and if not, insert it
         $subcategory_name = '';
@@ -104,6 +109,9 @@ function insert_new_products_to_woocommerce_callback() {
                     wp_set_object_terms( $existing_product_id, $subcategory_name, 'product_cat' );
                 }
 
+                // Set Brand name to products
+                wp_set_object_terms( $existing_product_id, $brand_name, 'brand' );
+
             } else {
 
                 // Update the status of the processed product in your database
@@ -131,10 +139,13 @@ function insert_new_products_to_woocommerce_callback() {
                     update_post_meta( $product_id, '_sku', $sku );
 
                     // Set product categories
-
                     wp_set_object_terms( $product_id, $parent_category_name, 'product_cat' );
 
+                    // Set subcategory to products
                     wp_set_object_terms( $product_id, $subcategory_name, 'product_cat', true );
+
+                    // Set Brand name to products
+                    wp_set_object_terms( $product_id, $brand_name, 'brand' );
 
                     // Set product dimensions
                     foreach ( $measurementList as $measurement ) {

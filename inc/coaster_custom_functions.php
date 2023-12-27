@@ -181,4 +181,20 @@ function delete_woocommerce_category_callback() {
 // Shortcode to trigger the category deletion process
 add_shortcode( 'delete_woocommerce_category', 'delete_woocommerce_category_callback' );
 
+
+// Display brand name on single product page
+/*function display_product_brand() {
+    global $product;
+
+    $terms = get_the_terms($product->get_id(), 'brand');
+
+    if ($terms && !is_wp_error($terms)) {
+        $brand_name = esc_html($terms[0]->name);
+        echo '<div class="product-brand posted_in">Brand: ' . $brand_name . '</div>';
+    }
+}
+add_action('woocommerce_before_single_product', 'display_product_brand', 10); */
+
+
+
 ?>

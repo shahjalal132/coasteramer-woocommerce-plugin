@@ -54,16 +54,13 @@ register_deactivation_hook( __FILE__, 'inventory_table_deactivation' );
 
 // Including requirements files
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_routs_api.php';
-require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_table.php';
-require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_categories_table.php';
-require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_price_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_insert_products.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_insert_categories.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_add_products_to_woocommerce.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_insert_price_to_db.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_categories_from_db.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_parent_cat_from_woo.php';
-require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_inventory_table.php';
+require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_all_db_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_inventory_from_api_and_insert.php';
 
 ?>

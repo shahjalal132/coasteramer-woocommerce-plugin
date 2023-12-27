@@ -1,14 +1,11 @@
 <?php
 
-// Product insert to WooCommerce shortcode
-add_shortcode( 'coaster_product_insert_to_woocommerce', 'insert_new_products_to_woocommerce' );
-
 /**
  * Inserts new products to WooCommerce.
  *
  * @return string The success message after importing the products.
  */
-function insert_new_products_to_woocommerce() {
+function insert_new_products_to_woocommerce_callback() {
     // Start output buffering
     ob_start();
 
@@ -241,4 +238,8 @@ function insert_new_products_to_woocommerce() {
     // Return buffered content
     return ob_get_clean();
 }
+
+// Product insert to WooCommerce shortcode
+add_shortcode( 'coaster_product_insert_to_woocommerce', 'insert_new_products_to_woocommerce_callback' );
+
 ?>

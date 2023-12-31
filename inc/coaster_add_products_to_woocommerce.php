@@ -98,7 +98,7 @@ function insert_new_products_to_woocommerce_callback() {
 					[ 'id' => $product->id ]
 				);
 				// Update existing product
-				wp_update_post( [ 
+				wp_update_post( [
 					'ID'           => $existing_product_id,
 					'post_title'   => $title,
 					'post_content' => $description,
@@ -131,7 +131,7 @@ function insert_new_products_to_woocommerce_callback() {
 					[ 'id' => $product->id ]
 				);
 				// Insert new product
-				$product_id = wp_insert_post( [ 
+				$product_id = wp_insert_post( [
 					'post_title'   => $title,
 					'post_content' => $description,
 					'post_status'  => 'publish',
@@ -191,7 +191,7 @@ function insert_new_products_to_woocommerce_callback() {
 						$file_path = $upload_dir['path'] . '/' . $image_name;
 						$file_name = basename( $file_path );
 
-						$attachment = [ 
+						$attachment = [
 							'post_mime_type' => mime_content_type( $file_path ),
 							'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
 							'post_content'   => '',
@@ -202,7 +202,7 @@ function insert_new_products_to_woocommerce_callback() {
 						$attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
 
 						// Add image to the product gallery
-						if ( $attach_id && ! is_wp_error( $attach_id ) ) {
+						if ( $attach_id && !is_wp_error( $attach_id ) ) {
 							// Set the product image
 							set_post_thumbnail( $product_id, $attach_id );
 

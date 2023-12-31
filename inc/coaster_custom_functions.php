@@ -195,6 +195,43 @@ add_shortcode( 'delete_woocommerce_category', 'delete_woocommerce_category_callb
 add_action( 'woocommerce_product_meta_end', 'display_brand_on_product_page' );*/
 
 
+function delete_all_woocommerce_products() {
+    $args = array(
+        'post_type'      => 'product',
+        'posts_per_page' => -1,
+    );
+
+    $products = get_posts($args);
+
+    foreach ($products as $product) {
+        wp_delete_post($product->ID, true); // Set the second parameter to true to bypass the trash and delete permanently
+    }
+
+    echo '<p>All WooCommerce products have been deleted.</p>';
+}
+
+add_shortcode( 'delete_all_products', 'delete_all_woocommerce_products' );
+
+
+function delete_all_trashed_woocommerce_products() {
+    $args = array(
+        'post_type'      => 'product',
+        'posts_per_page' => -1,
+        'post_status'    => 'trash',
+    );
+
+    $trashed_products = get_posts($args);
+
+    foreach ($trashed_products as $product) {
+        wp_delete_post($product->ID, true); // Set the second parameter to true to bypass the trash and delete permanently
+    }
+
+    echo '<p>All trashed WooCommerce products have been permanently deleted.</p>';
+}
+
+add_shortcode( 'delete_products_from_trash', 'delete_all_trashed_woocommerce_products' );
+
+
 
 
 ?>

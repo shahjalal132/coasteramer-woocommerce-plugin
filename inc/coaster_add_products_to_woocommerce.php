@@ -1,5 +1,12 @@
 <?php
 
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'coasteramer/v1', '/sync-product', array(
+		'methods'  => 'GET',
+		'callback' => 'insert_new_products_to_woocommerce_callback',
+	) );
+} );
+
 /**
  * Inserts new products to WooCommerce.
  *

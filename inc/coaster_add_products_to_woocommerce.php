@@ -176,6 +176,8 @@ function insert_new_products_to_woocommerce_callback() {
 					}
 
 					// Set product images
+					$specific_image_attached = false; // Flag to track the attachment of the specific image
+
 					foreach ( $image_urls as $image_url ) {
 						// Extract image name
 						$image_name = basename( $image_url );
@@ -184,37 +186,38 @@ function insert_new_products_to_woocommerce_callback() {
 
 						// Download the image from URL and save it to the upload directory
 						$image_data = file_get_contents( $image_url );
-						$image_file = $upload_dir['path'] . '/' . $image_name;
-						file_put_contents( $image_file, $image_data );
 
-						// Prepare image data to be attached to the product
-						$file_path = $upload_dir['path'] . '/' . $image_name;
-						$file_name = basename( $file_path );
+						if ( $image_data !== false ) {
+							$image_file = $upload_dir['path'] . '/' . $image_name;
+							file_put_contents( $image_file, $image_data );
 
-						$attachment = [
-							'post_mime_type' => mime_content_type( $file_path ),
-							'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
-							'post_content'   => '',
-							'post_status'    => 'inherit',
-						];
+							// Prepare image data to be attached to the product
+							$file_path = $upload_dir['path'] . '/' . $image_name;
+							$file_name = basename( $file_path );
 
-						// Insert the image as an attachment
-						$attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
+							// Insert the image as an attachment
+							$attachment = [
+								'post_mime_type' => mime_content_type( $file_path ),
+								'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
+								'post_content'   => '',
+								'post_status'    => 'inherit',
+							];
 
-						// Add image to the product gallery
-						if ( $attach_id && !is_wp_error( $attach_id ) ) {
-							// Set the product image
-							set_post_thumbnail( $product_id, $attach_id );
+							$attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
 
-							// Set gallery
-							$gallery_ids = get_post_meta( $product_id, '_product_image_gallery', true );
-							$gallery_ids = explode( ',', $gallery_ids );
+							// Set specific image as product thumbnail
+							if ( strpos( $image_url, '_01x900.jpg' ) !== false && !$specific_image_attached && $attach_id && !is_wp_error( $attach_id ) ) {
+								set_post_thumbnail( $product_id, $attach_id );
+								$specific_image_attached = true; // Flag the attachment of specific image as product thumbnail
+							}
 
-							// Add the new image to the existing gallery
-							$gallery_ids[] = $attach_id;
-
-							// Update the product gallery
-							update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
+							// Add all images to the product gallery except the specific image
+							if ( strpos( $image_url, '_01x900.jpg' ) === false && $attach_id && !is_wp_error( $attach_id ) ) {
+								$gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
+								$gallery_ids   = explode( ',', $gallery_ids );
+								$gallery_ids[] = $attach_id;
+								update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
+							}
 						}
 					}
 

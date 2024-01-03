@@ -8,7 +8,7 @@
  */
 function getCategoryByCode( $category_code ) {
 	// Get all product categories
-	$categories = get_terms( [ 
+	$categories = get_terms( [
 		'taxonomy'   => 'product_cat', // The taxonomy of the terms to retrieve
 		'hide_empty' => false, // Whether to hide categories with no products
 	] );
@@ -27,7 +27,7 @@ function getCategoryByCode( $category_code ) {
 			$category_id   = $category->term_id;
 
 			// Return an array containing both the category name and ID
-			return [ 
+			return [
 				'category_name' => $category_name,
 				'category_id'   => $category_id,
 			];
@@ -42,7 +42,7 @@ function get_subcategory_by_code_callback() {
 	$parent_category_id = '3378';
 
 	// Get subcategories of the specified parent category
-	$subcategories = get_terms( [ 
+	$subcategories = get_terms( [
 		'taxonomy'   => 'product_cat', // WooCommerce product category taxonomy
 		'parent'     => $parent_category_id,
 		'hide_empty' => false, // Set to true to hide empty categories
@@ -66,7 +66,7 @@ add_shortcode( 'get_subcategory_by_code', 'get_subcategory_by_code_callback' );
 function get_subcategory_by_parent_category_code( $parent_category_code ) {
 
 	// Get subcategories of the specified parent category
-	$subcategories = get_terms( [ 
+	$subcategories = get_terms( [
 		'taxonomy'   => 'product_cat', // WooCommerce product category taxonomy
 		'parent'     => $parent_category_code,
 		'hide_empty' => false, // Set to true to hide empty categories
@@ -99,12 +99,12 @@ function fetch_all_categories_from_db() {
 		$category_slug = sanitize_title( $category_name );
 
 		// Insert category into WooCommerce product categories
-		$new_category = wp_insert_term( $category_name, 'product_cat', [ 
+		$new_category = wp_insert_term( $category_name, 'product_cat', [
 			'slug'        => $category_slug,
 			'description' => $category_code,
 		] );
 
-		if ( ! is_wp_error( $new_category ) ) {
+		if ( !is_wp_error( $new_category ) ) {
 			// Category added successfully
 			$category_id = $new_category['term_id'];
 
@@ -118,13 +118,13 @@ function fetch_all_categories_from_db() {
 					$subcategory_slug = sanitize_title( $subcategory_name );
 
 					// Insert subcategory into WooCommerce under its parent category
-					$new_subcategory = wp_insert_term( $subcategory_name, 'product_cat', [ 
+					$new_subcategory = wp_insert_term( $subcategory_name, 'product_cat', [
 						'slug'        => $subcategory_slug,
 						'parent'      => $category_id, // Assign parent category ID
 						'description' => $subcategory_code, // Use $piece_code as subcategory description
 					] );
 
-					if ( ! is_wp_error( $new_subcategory ) ) {
+					if ( !is_wp_error( $new_subcategory ) ) {
 						// Subcategory added successfully
 						$subcategory_id = $new_subcategory['term_id'];
 
@@ -138,7 +138,7 @@ function fetch_all_categories_from_db() {
 								$piece_code = $piece['PieceCode'];
 
 								// Insert piece as a sub-subcategory (nested under subcategory)
-								$new_piece = wp_insert_term( $piece_name, 'product_cat', [ 
+								$new_piece = wp_insert_term( $piece_name, 'product_cat', [
 									'slug'        => $piece_slug,
 									'parent'      => $subcategory_id, // Assign parent subcategory ID
 									'description' => $piece_code, // Use $piece_code as sub-subcategory description
@@ -196,37 +196,37 @@ add_action( 'woocommerce_product_meta_end', 'display_brand_on_product_page' );
 
 
 function delete_all_woocommerce_products() {
-    $args = array(
-        'post_type'      => 'product',
-        'posts_per_page' => -1,
-    );
+	$args = array(
+		'post_type'      => 'product',
+		'posts_per_page' => -1,
+	);
 
-    $products = get_posts($args);
+	$products = get_posts( $args );
 
-    foreach ($products as $product) {
-        wp_delete_post($product->ID, true); // Set the second parameter to true to bypass the trash and delete permanently
-    }
+	foreach ( $products as $product ) {
+		wp_delete_post( $product->ID, true ); // Set the second parameter to true to bypass the trash and delete permanently
+	}
 
-    echo '<p>All WooCommerce products have been deleted.</p>';
+	echo '<p>All WooCommerce products have been deleted.</p>';
 }
 
 add_shortcode( 'delete_all_products', 'delete_all_woocommerce_products' );
 
 
 function delete_all_trashed_woocommerce_products() {
-    $args = array(
-        'post_type'      => 'product',
-        'posts_per_page' => -1,
-        'post_status'    => 'trash',
-    );
+	$args = array(
+		'post_type'      => 'product',
+		'posts_per_page' => -1,
+		'post_status'    => 'trash',
+	);
 
-    $trashed_products = get_posts($args);
+	$trashed_products = get_posts( $args );
 
-    foreach ($trashed_products as $product) {
-        wp_delete_post($product->ID, true); // Set the second parameter to true to bypass the trash and delete permanently
-    }
+	foreach ( $trashed_products as $product ) {
+		wp_delete_post( $product->ID, true ); // Set the second parameter to true to bypass the trash and delete permanently
+	}
 
-    echo '<p>All trashed WooCommerce products have been permanently deleted.</p>';
+	echo '<p>All trashed WooCommerce products have been permanently deleted.</p>';
 }
 
 add_shortcode( 'delete_products_from_trash', 'delete_all_trashed_woocommerce_products' );

@@ -64,6 +64,7 @@ function add_new_product_to_woocommerce_callback() {
 
         // Brand name
         $brand_name = 'Coaster';
+        $tag_name   = 'Coaster';
 
         // Check if the subcategory exists, and if not, insert it
         $subcategory_name = '';
@@ -198,6 +199,9 @@ function add_new_product_to_woocommerce_callback() {
 
             // Update the custom field
             update_post_meta( $product_id, '_brand', $brand_name );
+
+            // set tag
+            wp_set_object_terms( $product_id, $tag_name, 'product_tag', true );
 
             // Set product dimensions
             foreach ( $measurementList as $measurement ) {

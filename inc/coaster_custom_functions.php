@@ -188,7 +188,7 @@ function display_brand_on_product_page() {
 	$brand = get_post_meta( get_the_ID(), '_brand', true );
 
 	if ( $brand ) {
-		echo '<p>Brand: ' . esc_html( $brand ) . '</p>';
+		echo '<p class="coaster-brand">Brand: ' . esc_html( $brand ) . '</p>';
 	}
 }
 

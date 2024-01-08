@@ -9,6 +9,9 @@ add_action( 'rest_api_init', function () {
 
 /**
  * Inserts new products to WooCommerce.
+ * 
+ * !this is old code. 
+ * *use add_new_product_to_woocommerce_callback() instead. here are update code
  *
  * @return string The success message after importing the products.
  */

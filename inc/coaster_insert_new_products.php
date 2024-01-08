@@ -3,6 +3,13 @@
 require_once COASTERAMER_PLUGIN_PATH . '/vendor/autoload.php';
 use Automattic\WooCommerce\Client;
 
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'coasteramer/v1', '/sync-product', array(
+        'methods'  => 'GET',
+        'callback' => 'add_new_product_to_woocommerce_callback',
+    ) );
+} );
+
 function add_new_product_to_woocommerce_callback() {
     ob_start();
 

@@ -12,36 +12,36 @@ I created 6 shortcode for  fetch data from api and insert them to database. to u
     ```php
         [insert_categories]
     ```
-    create a page and paste this shortcode and run. if successfully insert it will return a successfull message.
+    create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 
 2. call products api and insert products to database
     ```php
         [insert_products]
     ```
-    create a page and paste this shortcode and run. if successfully insert it will return a successfull message.
+    create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 
 3. call inventory api and insert inventory to database
     ```php
         [coaster_inventory_api]
     ```
-    create a page and paste this shortcode and run. if successfully insert it will return a successfull message.
+    create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 
 4. call price api and insert products to database
     ```php
         [insert_price_to_db_shortcode]
     ```
-    create a page and paste this shortcode and run. if successfully insert it will return a successfull message.
+    create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 
 5. this shortcode for custom query. it will fetch all category from database. and insert them into woocommerce products category. letter when add products then it will add category to products
     ```php
         [fetch_all_categories]
     ```
-    create a page and paste this shortcode and run. if successfully insert it will return a successfull message.
+    create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 
 6. finally add a product to woocommerce including all information
     ```php
         [coaster_product_insert_to_woocommerce]
     ```
-    create a page and paste this shortcode and run. if successfully insert it will return a successfull message.
+    create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 
 **Make sure already you install woocommerce plugin**

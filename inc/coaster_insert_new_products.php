@@ -10,6 +10,12 @@ add_action( 'rest_api_init', function () {
     ) );
 } );
 
+/**
+ * Inserts new products to WooCommerce.
+ * 
+ * *This is updated code.
+ */
+
 function add_new_product_to_woocommerce_callback() {
     ob_start();
 

@@ -182,7 +182,7 @@ function delete_woocommerce_category_callback() {
 add_shortcode( 'delete_woocommerce_category', 'delete_woocommerce_category_callback' );
 
 
-// Display brand on single product page
+/* // Display brand on single product page
 function display_brand_on_product_page() {
 
 	$brand = get_post_meta( get_the_ID(), '_brand', true );
@@ -192,7 +192,7 @@ function display_brand_on_product_page() {
 	}
 }
 
-add_action( 'woocommerce_product_meta_end', 'display_brand_on_product_page' );
+add_action( 'woocommerce_product_meta_end', 'display_brand_on_product_page' ); */
 
 
 function delete_all_woocommerce_products() {

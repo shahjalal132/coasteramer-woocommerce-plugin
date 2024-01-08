@@ -57,7 +57,7 @@ require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_routs_api.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_all_db_table.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_fetch_all_api_insert_to_db.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_custom_functions.php';
-require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_add_products_to_woocommerce.php';
+// require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_add_products_to_woocommerce.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_insert_new_products.php';
 
 ?>

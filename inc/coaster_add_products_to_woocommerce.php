@@ -130,6 +130,7 @@ function insert_new_products_to_woocommerce_callback() {
 					[ 'status' => 'completed' ],
 					[ 'id' => $product->id ]
 				);
+				
 				// Insert new product
 				$product_id = wp_insert_post( [
 					'post_title'   => $title,

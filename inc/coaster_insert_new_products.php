@@ -84,6 +84,12 @@ function add_new_product_to_woocommerce_callback() {
 
         // Extract price details from the database record
         $base_regular_price = $price_row->map;
+        $db_regular_price   = $price_row->price;
+
+        // If product map is 0, use $db_regular_price as regular price
+        if ( $base_regular_price == 0 ) {
+            $base_regular_price = $db_regular_price;
+        }
 
         // Calculate the new regular price and sale price with specified percentages
         $regular_price = round( $base_regular_price * 1.12 ); // Increase by 12%

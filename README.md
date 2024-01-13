@@ -40,7 +40,7 @@ I created 6 shortcode for  fetch data from api and insert them to database. to u
 
 6. finally add a product to woocommerce including all information
     ```php
-        [coaster_product_insert_to_woocommerce]
+        [add_new_product_to_woocommerce]
     ```
     create a page and paste this shortcode and run. if successfully insert it will return a successful message.
 

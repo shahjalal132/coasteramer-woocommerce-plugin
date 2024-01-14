@@ -231,6 +231,8 @@ function add_new_product_to_woocommerce_callback() {
             update_post_meta( $product_id, '_regular_price', $regular_price );
             update_post_meta( $product_id, '_sale_price', $sale_price );
             update_post_meta( $product_id, '_price', $sale_price );
+            // Set Brand name to products
+            // wp_set_object_terms( $product_id, $brand_name, 'pwb-brand' );
 
             // Set product images
             $specific_image_attached = false; // Flag to track the attachment of the specific image
@@ -269,12 +271,11 @@ function add_new_product_to_woocommerce_callback() {
                     }
 
                     // Add all images to the product gallery except the specific image
-                    if ( strpos( $image_url, '_01x900.jpg' ) === false && $attach_id && !is_wp_error( $attach_id ) ) {
-                        $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
-                        $gallery_ids   = explode( ',', $gallery_ids );
-                        $gallery_ids[] = $attach_id;
-                        update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
-                    }
+
+                    $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
+                    $gallery_ids   = explode( ',', $gallery_ids );
+                    $gallery_ids[] = $attach_id;
+                    update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
                 }
 
                 // Fetch inventory information from the database

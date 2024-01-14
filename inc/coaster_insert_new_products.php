@@ -288,7 +288,13 @@ function add_new_product_to_woocommerce_callback() {
 
                     // Update product meta data in WordPress
                     update_post_meta( $product_id, '_stock', $inventory_qty );
-                    update_post_meta( $product_id, '_stock_status', 'instock' );
+                    
+                    // display out of stock message if stock is 0
+                    if ( $inventory_qty <= 0 ) {
+                        update_post_meta( $product_id, '_stock_status', 'outofstock' );
+                    } else {
+                        update_post_meta( $product_id, '_stock_status', 'instock' );
+                    }
                     update_post_meta( $product_id, '_manage_stock', 'yes' );
                 }
 

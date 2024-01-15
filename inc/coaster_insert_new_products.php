@@ -46,13 +46,25 @@ function add_new_product_to_woocommerce_callback() {
         $sku         = isset( $product_data['ProductNumber'] ) ? $product_data['ProductNumber'] : '';
         $pictures    = isset( $product_data['PictureFullURLs'] ) ? $product_data['PictureFullURLs'] : '';
         $image_urls  = explode( ',', $pictures );
-        // limit images_urls to first 5 images
+
+        // set image limit to 5
         $image_urls       = array_slice( $image_urls, 0, 5 );
         $measurementList  = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
         $boxSize          = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
         $category_code    = isset( $product_data['CategoryCode'] ) ? $product_data['CategoryCode'] : '';
         $subcategory_code = isset( $product_data['SubCategoryCode'] ) ? $product_data['SubCategoryCode'] : '';
         $piece_code       = isset( $product_data['PieceCode'] ) ? $product_data['PieceCode'] : '';
+
+        // Extract additional infestations
+        $upc          = isset( $product_data['UPC'] ) ? $product_data['UPC'] : '';
+        $MainColor    = isset( $product_data['MainColor'] ) ? $product_data['MainColor'] : '';
+        $MainFinish   = isset( $product_data['MainFinish'] ) ? $product_data['MainFinish'] : '';
+        $MainMaterial = isset( $product_data['MainMaterial'] ) ? $product_data['MainMaterial'] : '';
+        $BoxWeight    = isset( $product_data['BoxWeight'] ) ? $product_data['BoxWeight'] : '';
+        $Cubes        = isset( $product_data['Cubes]'] ) ? $product_data['Cubes]'] : '';
+
+        // extract components array
+        $components = isset( $product_data['Components'] ) ? $product_data['Components'] : [];
 
         // extract category name
         $categories_infos     = getCategoryByCode( $category_code );
@@ -233,6 +245,31 @@ function add_new_product_to_woocommerce_callback() {
             update_post_meta( $product_id, '_price', $sale_price );
             // Set Brand name to products
             // wp_set_object_terms( $product_id, $brand_name, 'pwb-brand' );
+
+            // set additional information
+            update_post_meta( $product_id, '_upc', $upc );
+            update_post_meta( $product_id, '_maincolor', $MainColor );
+            update_post_meta( $product_id, '_mainmaterial', $MainMaterial );
+            update_post_meta( $product_id, '_mainfinish', $MainFinish );
+            update_post_meta( $product_id, '_boxweight', $BoxWeight );
+            update_post_meta( $product_id, '_cubes', $Cubes );
+
+            // update products additional information's box size
+            foreach ( $components as $component ) {
+
+                // extract box size array
+                $boxSizes = isset( $component['BoxSize'] ) ? $component['BoxSize'] : [];
+
+                $boxLength = isset( $boxSizes['Length'] ) ? $boxSizes['Length'] : '';
+                $boxWidth  = isset( $boxSizes['Width'] ) ? $boxSizes['Width'] : '';
+                $boxHeight = isset( $boxSizes['Height'] ) ? $boxSizes['Height'] : '';
+
+                // update postmeta
+                update_post_meta( $product_id, '_jalalboxsize', $boxLength );
+                update_post_meta( $product_id, '_jalalboxwidth', $boxWidth );
+                update_post_meta( $product_id, '_jalalboxheight', $boxHeight );
+            }
+
 
             // Set specific image as product thumbnail
             $specific_image_attached = false; // Flag to track the attachment of the specific image

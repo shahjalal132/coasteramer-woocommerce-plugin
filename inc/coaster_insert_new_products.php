@@ -234,7 +234,7 @@ function add_new_product_to_woocommerce_callback() {
             // Set Brand name to products
             // wp_set_object_terms( $product_id, $brand_name, 'pwb-brand' );
 
-            // Set product images
+            // Set specific image as product thumbnail
             $specific_image_attached = false; // Flag to track the attachment of the specific image
 
             foreach ( $image_urls as $image_url ) {
@@ -264,18 +264,20 @@ function add_new_product_to_woocommerce_callback() {
 
                     $attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
 
-                    // Set specific image as product thumbnail
-                    if ( strpos( $image_url, '_01x900.jpg' ) !== false && !$specific_image_attached && $attach_id && !is_wp_error( $attach_id ) ) {
-                        set_post_thumbnail( $product_id, $attach_id );
-                        $specific_image_attached = true; // Flag the attachment of specific image as product thumbnail
+                    // Check if the image should be added to the gallery
+                    if ( !$specific_image_attached && $attach_id && !is_wp_error( $attach_id ) ) {
+                        // Add the image to the product gallery
+                        $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
+                        $gallery_ids   = explode( ',', $gallery_ids );
+                        $gallery_ids[] = $attach_id;
+                        update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
+
+                        // Check if this image should be set as the product thumbnail
+                        if ( strpos( $image_url, '_01x900.jpg' ) !== false || strpos( $image_url, '_1x900.jpg' ) !== false ) {
+                            set_post_thumbnail( $product_id, $attach_id );
+                            $specific_image_attached = true; // Flag the attachment of specific image as product thumbnail
+                        }
                     }
-
-                    // Add all images to the product gallery except the specific image
-
-                    $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
-                    $gallery_ids   = explode( ',', $gallery_ids );
-                    $gallery_ids[] = $attach_id;
-                    update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
                 }
 
                 // Fetch inventory information from the database
@@ -288,7 +290,7 @@ function add_new_product_to_woocommerce_callback() {
 
                     // Update product meta data in WordPress
                     update_post_meta( $product_id, '_stock', $inventory_qty );
-                    
+
                     // display out of stock message if stock is 0
                     if ( $inventory_qty <= 0 ) {
                         update_post_meta( $product_id, '_stock_status', 'outofstock' );

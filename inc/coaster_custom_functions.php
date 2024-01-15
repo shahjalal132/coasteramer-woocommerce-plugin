@@ -232,6 +232,70 @@ function delete_all_trashed_woocommerce_products() {
 add_shortcode( 'delete_products_from_trash', 'delete_all_trashed_woocommerce_products' );
 
 
+// Display additional information in single product page
+function display_custom_information_in_additional_tab( $product_attributes ) {
+	global $product;
+
+	// Get your custom product information (replace '_custom_field' with your actual meta key)
+	$upc          = get_post_meta( $product->get_id(), '_upc', true );
+	$mainColor    = get_post_meta( $product->get_id(), '_maincolor', true );
+	$mainMaterial = get_post_meta( $product->get_id(), '_mainmaterial', true );
+	$mainFinish   = get_post_meta( $product->get_id(), '_mainfinish', true );
+	$boxWeight    = get_post_meta( $product->get_id(), '_boxweight', true );
+	$cubes        = get_post_meta( $product->get_id(), '_cubes', true );
+	$boxSize      = get_post_meta( $product->get_id(), '_jalalboxsize', true );
+	$boxWidth     = get_post_meta( $product->get_id(), '_jalalboxwidth', true );
+	$boxHeight    = get_post_meta( $product->get_id(), '_jalalboxheight', true );
+
+	// Add your custom information to the attributes array
+	$product_attributes['jalal-addition-information1'] = array(
+		'label' => __( 'UPC' ),
+		'value' => esc_html( $upc ),
+	);
+
+	$product_attributes['jalal-addition-information2'] = array(
+		'label' => __( 'Main Color' ),
+		'value' => esc_html( $mainColor ),
+	);
+
+	$product_attributes['jalal-addition-information3'] = array(
+		'label' => __( 'Main Material' ),
+		'value' => esc_html( $mainMaterial ),
+	);
+
+	$product_attributes['jalal-addition-information4'] = array(
+		'label' => __( 'Main Finish' ),
+		'value' => esc_html( $mainFinish ),
+	);
+
+	$product_attributes['jalal-addition-information5'] = array(
+		'label' => __( 'Box Weight' ),
+		'value' => esc_html( $boxWeight ),
+	);
+
+	$product_attributes['jalal-addition-information6'] = array(
+		'label' => __( 'Cubes' ),
+		'value' => esc_html( $cubes ),
+	);
+
+	$product_attributes['jalal-addition-information7'] = array(
+		'label' => __( 'Box Size' ),
+		'value' => esc_html( $boxSize ),
+	);
+
+	$product_attributes['jalal-addition-information8'] = array(
+		'label' => __( 'Box Width' ),
+		'value' => esc_html( $boxWidth ),
+	);
+
+	$product_attributes['jalal-addition-information9'] = array(
+		'label' => __( 'Box Height' ),
+		'value' => esc_html( $boxHeight ),
+	);
 
 
-?>
+	return $product_attributes;
+}
+
+add_filter( 'woocommerce_display_product_attributes', 'display_custom_information_in_additional_tab' );
+

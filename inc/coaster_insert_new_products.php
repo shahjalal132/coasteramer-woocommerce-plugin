@@ -247,7 +247,7 @@ function add_new_product_to_woocommerce_callback() {
             // wp_set_object_terms( $product_id, $brand_name, 'pwb-brand' );
 
             // set additional information
-            update_post_meta( $product_id, '_upc', $upc );
+            update_post_meta( $product_id, '_op_barcode', $upc );
             update_post_meta( $product_id, '_maincolor', $MainColor );
             update_post_meta( $product_id, '_mainmaterial', $MainMaterial );
             update_post_meta( $product_id, '_mainfinish', $MainFinish );

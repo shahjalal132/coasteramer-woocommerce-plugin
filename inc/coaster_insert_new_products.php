@@ -48,9 +48,15 @@ function add_new_product_to_woocommerce_callback() {
         $image_urls  = explode( ',', $pictures );
 
         // set image limit to 5
-        $image_urls       = array_slice( $image_urls, 0, 5 );
-        $measurementList  = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
-        $boxSize          = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : '';
+        $image_urls      = array_slice( $image_urls, 0, 5 );
+        $measurementList = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
+
+        // extract box size array
+        $box_sizes = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : [];
+        $boxLength = isset( $box_sizes['Length'] ) ? $box_sizes['Length'] : '';
+        $boxWidth  = isset( $box_sizes['Width'] ) ? $box_sizes['Width'] : '';
+        $boxHeight = isset( $box_sizes['Height'] ) ? $box_sizes['Height'] : '';
+
         $category_code    = isset( $product_data['CategoryCode'] ) ? $product_data['CategoryCode'] : '';
         $subcategory_code = isset( $product_data['SubCategoryCode'] ) ? $product_data['SubCategoryCode'] : '';
         $piece_code       = isset( $product_data['PieceCode'] ) ? $product_data['PieceCode'] : '';
@@ -61,10 +67,7 @@ function add_new_product_to_woocommerce_callback() {
         $MainFinish   = isset( $product_data['MainFinish'] ) ? $product_data['MainFinish'] : '';
         $MainMaterial = isset( $product_data['MainMaterial'] ) ? $product_data['MainMaterial'] : '';
         $BoxWeight    = isset( $product_data['BoxWeight'] ) ? $product_data['BoxWeight'] : '';
-        $Cubes        = isset( $product_data['Cubes]'] ) ? $product_data['Cubes]'] : '';
-
-        // extract components array
-        $components = isset( $product_data['Components'] ) ? $product_data['Components'] : [];
+        $Cubes_value  = isset( $product_data['Cubes'] ) ? $product_data['Cubes'] : null;
 
         // extract category name
         $categories_infos     = getCategoryByCode( $category_code );
@@ -252,23 +255,12 @@ function add_new_product_to_woocommerce_callback() {
             update_post_meta( $product_id, '_mainmaterial', $MainMaterial );
             update_post_meta( $product_id, '_mainfinish', $MainFinish );
             update_post_meta( $product_id, '_boxweight', $BoxWeight );
-            update_post_meta( $product_id, '_cubes', $Cubes );
+            update_post_meta( $product_id, '_cubes', $Cubes_value );
 
             // update products additional information's box size
-            foreach ( $components as $component ) {
-
-                // extract box size array
-                $boxSizes = isset( $component['BoxSize'] ) ? $component['BoxSize'] : [];
-
-                $boxLength = isset( $boxSizes['Length'] ) ? $boxSizes['Length'] : '';
-                $boxWidth  = isset( $boxSizes['Width'] ) ? $boxSizes['Width'] : '';
-                $boxHeight = isset( $boxSizes['Height'] ) ? $boxSizes['Height'] : '';
-
-                // update postmeta
-                update_post_meta( $product_id, '_jalalboxsize', $boxLength );
-                update_post_meta( $product_id, '_jalalboxwidth', $boxWidth );
-                update_post_meta( $product_id, '_jalalboxheight', $boxHeight );
-            }
+            update_post_meta( $product_id, '_jalalboxsize', $boxLength );
+            update_post_meta( $product_id, '_jalalboxwidth', $boxWidth );
+            update_post_meta( $product_id, '_jalalboxheight', $boxHeight );
 
 
             // Set specific image as product thumbnail
@@ -310,9 +302,24 @@ function add_new_product_to_woocommerce_callback() {
                         update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
 
                         // Check if this image should be set as the product thumbnail
-                        if ( strpos( $image_url, '_01x900.jpg' ) !== false || strpos( $image_url, '_1x900.jpg' ) !== false ) {
+                        if ( strpos( $image_url, '_001x900.jpg' ) !== false || strpos( $image_url, '_01x900.jpg' ) !== false || strpos( $image_url, '_1x900.jpg' ) !== false ) {
                             set_post_thumbnail( $product_id, $attach_id );
                             $specific_image_attached = true; // Flag the attachment of specific image as product thumbnail
+                        }
+                    }
+
+                    // If specific image condition is not met, set a random image as thumbnail
+                    if ( !$specific_image_attached ) {
+                        $gallery_ids = get_post_meta( $product_id, '_product_image_gallery', true );
+                        $gallery_ids = explode( ',', $gallery_ids );
+
+                        // Check if there are images in the gallery
+                        if ( !empty( $gallery_ids ) ) {
+                            // Select a random image from the gallery
+                            $random_attach_id = $gallery_ids[array_rand( $gallery_ids )];
+
+                            // Set the randomly selected image as the product thumbnail
+                            set_post_thumbnail( $product_id, $random_attach_id );
                         }
                     }
                 }

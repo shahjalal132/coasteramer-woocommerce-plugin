@@ -178,6 +178,7 @@ function add_new_product_to_woocommerce_callback() {
 
             // Set Brand name to products
             wp_set_object_terms( $product_id, $brand_name, 'brand' );
+            // wp_set_object_terms( $product_id, $brand_name, 'pwb-brand' ); // client site taxonomy name is pwb-brand
 
             // Update the custom field
             update_post_meta( $product_id, '_brand', $brand_name );

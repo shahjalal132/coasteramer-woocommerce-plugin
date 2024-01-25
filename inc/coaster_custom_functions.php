@@ -273,7 +273,7 @@ function display_custom_information_in_additional_tab( $product_attributes ) {
 	);
 
 	$product_attributes['jalal-addition-information7'] = array(
-		'label' => __( 'Box Size' ),
+		'label' => __( 'Box Length' ),
 		'value' => esc_html( $boxSize ),
 	);
 

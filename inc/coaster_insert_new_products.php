@@ -303,7 +303,15 @@ function add_new_product_to_woocommerce_callback() {
                         update_post_meta( $product_id, '_product_image_gallery', implode( ',', $gallery_ids ) );
 
                         // Check if this image should be set as the product thumbnail
-                        if ( strpos( $image_url, '_001x900.jpg' ) !== false || strpos( $image_url, '_01x900.jpg' ) !== false || strpos( $image_url, '_1x900.jpg' ) !== false ) {
+                        if (
+                            strpos( $image_url, '_001x900.jpg' ) !== false
+                            || strpos( $image_url, '_01x900.jpg' ) !== false
+                            || strpos( $image_url, '_1x900.jpg' ) !== false
+                            || strpos( $image_url, '_21x900.jpg' ) !== false
+                            || strpos( $image_url, '-S6x900.jpg' ) !== false
+                            || strpos( $image_url, '-S4Lx900.jpg' ) !== false
+                            || strpos( $image_url, '_22x900.jpg' ) !== false
+                        ) {
                             set_post_thumbnail( $product_id, $attach_id );
                             $specific_image_attached = true; // Flag the attachment of specific image as product thumbnail
                         }

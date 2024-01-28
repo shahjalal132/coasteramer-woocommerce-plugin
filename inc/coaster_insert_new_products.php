@@ -263,11 +263,11 @@ function add_new_product_to_woocommerce_callback() {
             update_post_meta( $product_id, '_jalalboxwidth', $boxWidth );
             update_post_meta( $product_id, '_jalalboxheight', $boxHeight );
 
-
-            // Set specific image as product thumbnail
+            // Set product gallery and thumbnail
             $specific_image_attached = false; // Flag to track the attachment of the specific image
 
             foreach ( $image_urls as $image_url ) {
+
                 // Extract image name
                 $image_name = basename( $image_url );
                 // Get WordPress upload directory
@@ -295,7 +295,8 @@ function add_new_product_to_woocommerce_callback() {
                     $attach_id = wp_insert_attachment( $attachment, $file_path, $product_id );
 
                     // Check if the image should be added to the gallery
-                    if ( !$specific_image_attached && $attach_id && !is_wp_error( $attach_id ) ) {
+                    if ( $attach_id && !is_wp_error( $attach_id ) ) {
+
                         // Add the image to the product gallery
                         $gallery_ids   = get_post_meta( $product_id, '_product_image_gallery', true );
                         $gallery_ids   = explode( ',', $gallery_ids );
@@ -314,6 +315,7 @@ function add_new_product_to_woocommerce_callback() {
                         ) {
                             set_post_thumbnail( $product_id, $attach_id );
                             $specific_image_attached = true; // Flag the attachment of specific image as product thumbnail
+                            continue;
                         }
                     }
 

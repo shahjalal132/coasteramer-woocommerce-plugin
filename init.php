@@ -32,25 +32,25 @@ if ( !defined( 'COASTERAMER_PLUGIN_URI' ) ) {
 register_activation_hook( __FILE__, 'coasteramer_db_products_table_create' );
 
 // Remove wp_sync_products db table when plugin deactivate
-register_deactivation_hook( __FILE__, 'coasteramer_db_products_table_remove' );
+// register_deactivation_hook( __FILE__, 'coasteramer_db_products_table_remove' );
 
 // Create wp_sync_category db table when plugin activate
 register_activation_hook( __FILE__, 'coasteramer_db_category_table_create' );
 
 // Remove wp_sync_category db table when plugin deactivate
-register_deactivation_hook( __FILE__, 'coasteramer_db_category_table_remove' );
+// register_deactivation_hook( __FILE__, 'coasteramer_db_category_table_remove' );
 
 // Create wp_sync_price db table when plugin activate
 register_activation_hook( __FILE__, 'coasteramer_db_price_table_create' );
 
 // Remove wp_sync_price db table when plugin deactivate
-register_deactivation_hook( __FILE__, 'coasteramer_db_price_table_remove' );
+// register_deactivation_hook( __FILE__, 'coasteramer_db_price_table_remove' );
 
 // Create wp_sync_inventory db table when plugin activate
 register_activation_hook( __FILE__, 'coaster_sync_inventory_table' );
 
 // Remove wp_sync_inventory db table when plugin deactivate
-register_deactivation_hook( __FILE__, 'inventory_table_deactivation' );
+// register_deactivation_hook( __FILE__, 'inventory_table_deactivation' );
 
 // Including requirements files
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_routs_api.php';

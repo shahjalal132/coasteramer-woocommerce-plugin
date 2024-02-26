@@ -243,4 +243,63 @@ function insert_price_to_db_callback() {
 }
 add_shortcode( 'insert_price_to_db_shortcode', 'insert_price_to_db_callback' );
 
-?>
+// fetch collection from api
+function get_collection_from_api() {
+    $curl = curl_init();
+
+    curl_setopt_array(
+        $curl,
+        array(
+            CURLOPT_URL            => 'http://api.coasteramer.com/api/product/GetCollectionList',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'GET',
+            CURLOPT_HTTPHEADER     => array(
+                'keycode: 46FE2CA20629404CA246EF3A98',
+            ),
+        )
+    );
+
+
+    $response = curl_exec( $curl );
+
+    curl_close( $curl );
+    return $response;
+}
+
+// insert price to database
+function insert_collection_to_db_callback() {
+    ob_start();
+
+    $api_response = get_collection_from_api();
+
+    $collections = json_decode( $api_response, true );
+
+    // Insert to database
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'sync_collections';
+    $wpdb->query( "TRUNCATE TABLE $table_name" );
+
+    foreach ( $collections as $collection ) {
+        // collection json data
+        $collection_data = json_encode( $collection );
+
+        // insert to database
+        $wpdb->insert(
+            $table_name,
+            [
+                'operation_type'  => 'collection_create',
+                'operation_value' => $collection_data,
+            ]
+        );
+    }
+
+    echo '<h4>Price inserted successfully</h4>';
+
+    return ob_get_clean();
+}
+add_shortcode( 'insert_collection_to_db_shortcode', 'insert_collection_to_db_callback' );

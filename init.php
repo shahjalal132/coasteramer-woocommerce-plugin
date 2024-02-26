@@ -52,6 +52,9 @@ register_activation_hook( __FILE__, 'coaster_sync_inventory_table' );
 // Remove wp_sync_inventory db table when plugin deactivate
 // register_deactivation_hook( __FILE__, 'inventory_table_deactivation' );
 
+// Create wp_collection_inventory db table when plugin activate
+register_activation_hook( __FILE__, 'coasteramer_db_collection_table_create' );
+
 // Including requirements files
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_products_routs_api.php';
 require_once COASTERAMER_PLUGIN_PATH . '/inc/coaster_create_all_db_table.php';

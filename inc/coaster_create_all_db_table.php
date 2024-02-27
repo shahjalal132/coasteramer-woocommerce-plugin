@@ -161,8 +161,9 @@ function coasteramer_db_collection_table_create() {
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id INT AUTO_INCREMENT,
-        operation_type VARCHAR(255) NOT NULL,
-        operation_value TEXT NOT NULL,
+        collection_code VARCHAR(255),
+        collection_name VARCHAR(255),
+        description TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

@@ -23,9 +23,10 @@ function add_new_product_to_woocommerce_callback() {
     global $wpdb;
 
     // Define table names
-    $table_name_products  = $wpdb->prefix . 'sync_products';
-    $table_name_prices    = $wpdb->prefix . 'sync_price';
-    $table_name_inventory = $wpdb->prefix . 'sync_inventory';
+    $table_name_products   = $wpdb->prefix . 'sync_products';
+    $table_name_prices     = $wpdb->prefix . 'sync_price';
+    $table_name_inventory  = $wpdb->prefix . 'sync_inventory';
+    $table_name_collection = $wpdb->prefix . 'sync_collections';
 
     // Retrieve pending products from the database
     $products = $wpdb->get_results( "SELECT * FROM $table_name_products WHERE status = 'pending' LIMIT 1" );
@@ -52,10 +53,11 @@ function add_new_product_to_woocommerce_callback() {
         $measurementList = isset( $product_data['MeasurementList'] ) ? $product_data['MeasurementList'] : '';
 
         // extract box size array
-        $box_sizes = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : [];
-        $boxLength = isset( $box_sizes['Length'] ) ? $box_sizes['Length'] : '';
-        $boxWidth  = isset( $box_sizes['Width'] ) ? $box_sizes['Width'] : '';
-        $boxHeight = isset( $box_sizes['Height'] ) ? $box_sizes['Height'] : '';
+        $box_sizes       = isset( $product_data['BoxSize'] ) ? $product_data['BoxSize'] : [];
+        $boxLength       = isset( $box_sizes['Length'] ) ? $box_sizes['Length'] : '';
+        $boxWidth        = isset( $box_sizes['Width'] ) ? $box_sizes['Width'] : '';
+        $boxHeight       = isset( $box_sizes['Height'] ) ? $box_sizes['Height'] : '';
+        $collection_code = isset( $product_data['CollectionCode'] ) ? $product_data['CollectionCode'] : '';
 
         $category_code    = isset( $product_data['CategoryCode'] ) ? $product_data['CategoryCode'] : '';
         $subcategory_code = isset( $product_data['SubCategoryCode'] ) ? $product_data['SubCategoryCode'] : '';
@@ -76,10 +78,6 @@ function add_new_product_to_woocommerce_callback() {
 
         // extract subcategory information
         $subcategories = get_subcategory_by_parent_category_code( $parent_category_id );
-
-        // Brand name
-        $brand_name = 'Coaster';
-        $tag_name   = 'Jalal';
 
         // Check if the subcategory exists, and if not, insert it
         $subcategory_name = '';
@@ -109,6 +107,20 @@ function add_new_product_to_woocommerce_callback() {
         // Calculate the new regular price and sale price with specified percentages
         $regular_price = round( $base_regular_price * 1.12 ); // Increase by 12%
         $sale_price    = round( $base_regular_price * 1.024 ); // Increase by 2.4%
+
+        // Get collection information
+        $collections = $wpdb->get_results( "SELECT * FROM $table_name_collection WHERE collection_code = '$collection_code' LIMIT 1" );
+
+        $collection_name = '';
+        if ( !empty( $collections ) && is_array( $collections ) ) {
+            foreach ( $collections as $collection ) {
+                $collection_name = $collection->collection_name;
+            }
+        }
+
+        // Brand name
+        $brand_name = 'Coaster';
+        $tag_name   = $collection_name;
 
         // Set up the API client with your WooCommerce store URL and credentials
         $client = new Client(

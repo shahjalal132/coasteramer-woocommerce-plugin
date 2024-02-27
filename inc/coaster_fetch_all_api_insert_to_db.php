@@ -285,20 +285,23 @@ function insert_collection_to_db_callback() {
     $wpdb->query( "TRUNCATE TABLE $table_name" );
 
     foreach ( $collections as $collection ) {
-        // collection json data
-        $collection_data = json_encode( $collection );
+
+        $collection_code = $collection['CollectionCode'] ?? null;
+        $collection_name = $collection['CollectionName'] ?? '';
+        $description     = $collection['Description'] ?? '';
 
         // insert to database
         $wpdb->insert(
             $table_name,
             [
-                'operation_type'  => 'collection_create',
-                'operation_value' => $collection_data,
+                'collection_code' => $collection_code,
+                'collection_name' => $collection_name,
+                'description'     => $description,
             ]
         );
     }
 
-    echo '<h4>Price inserted successfully</h4>';
+    echo '<h4>Collection inserted successfully to Database</h4>';
 
     return ob_get_clean();
 }

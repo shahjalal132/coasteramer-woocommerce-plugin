@@ -247,11 +247,6 @@ function display_custom_information_in_additional_tab( $product_attributes ) {
 	$boxHeight    = get_post_meta( $product->get_id(), '_jalalboxheight', true );
 
 	// Add your custom information to the attributes array
-	$product_attributes['jalal-addition-information10'] = array(
-		'label' => __( 'Collection' ),
-		'value' => esc_html( 'Collection value' ),
-	);
-
 	$product_attributes['jalal-addition-information2'] = array(
 		'label' => __( 'Main Color' ),
 		'value' => esc_html( $mainColor ),

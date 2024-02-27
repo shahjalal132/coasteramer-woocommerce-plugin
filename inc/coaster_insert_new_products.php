@@ -79,7 +79,7 @@ function add_new_product_to_woocommerce_callback() {
 
         // Brand name
         $brand_name = 'Coaster';
-        $tag_name   = 'Coaster';
+        $tag_name   = 'Jalal';
 
         // Check if the subcategory exists, and if not, insert it
         $subcategory_name = '';
@@ -156,9 +156,12 @@ function add_new_product_to_woocommerce_callback() {
                 'description' => $description,
                 'attributes'  => [
                     [
-                        'name'      => 'Dimensions',
-                        'visible'   => true,
-                        'variation' => true,
+                        'name'        => 'Collection',
+                        'options'     => explode( separator: '|', string: $tag_name ),
+                        'position'    => 0,
+                        'visible'     => true,
+                        'variation'   => true,
+                        'is_taxonomy' => false,
                     ],
                 ],
             ];
@@ -182,6 +185,12 @@ function add_new_product_to_woocommerce_callback() {
 
             // Update the custom field
             update_post_meta( $product_id, '_brand', $brand_name );
+
+            // set tag
+            wp_set_object_terms( $product_id, $tag_name, 'product_tag', false );
+
+            return "Product Updated Successfully";
+
         } else {
 
             // Update the status of the processed product in your database
@@ -199,9 +208,12 @@ function add_new_product_to_woocommerce_callback() {
                 'description' => $description,
                 'attributes'  => [
                     [
-                        'name'      => 'Dimensions',
-                        'visible'   => true,
-                        'variation' => true,
+                        'name'        => 'Collection',
+                        'options'     => explode( separator: '|', string: $tag_name ),
+                        'position'    => 0,
+                        'visible'     => true,
+                        'variation'   => true,
+                        'is_taxonomy' => false,
                     ],
                 ],
             ];
@@ -378,11 +390,9 @@ function add_new_product_to_woocommerce_callback() {
     }
 
     // Output success message
-    echo '<h4>Products imported successfully to WooCommerce</h4>';
+    echo '<h4>Product inserted successfully</h4>';
 
     return ob_get_clean();
 }
 
 add_shortcode( 'add_new_product_to_woocommerce', 'add_new_product_to_woocommerce_callback' );
-
-?>

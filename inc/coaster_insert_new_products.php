@@ -120,7 +120,7 @@ function add_new_product_to_woocommerce_callback() {
 
         // Brand name
         $brand_name = 'Coaster';
-        $tag_name   = $collection_name;
+        $tag_name   = $collection_name ?? '';
 
         // Set up the API client with your WooCommerce store URL and credentials
         $client = new Client(
@@ -169,7 +169,7 @@ function add_new_product_to_woocommerce_callback() {
                 'attributes'  => [
                     [
                         'name'        => 'Collection',
-                        'options'     => explode( separator: '|', string: $tag_name ),
+                        'options'     => explode(  '|',  $tag_name ),
                         'position'    => 0,
                         'visible'     => true,
                         'variation'   => true,
@@ -201,7 +201,7 @@ function add_new_product_to_woocommerce_callback() {
             // set tag
             wp_set_object_terms( $product_id, $tag_name, 'product_tag', false );
 
-            return "Product Updated Successfully";
+            return ["Product Updated Successfully"];
 
         } else {
 
@@ -221,7 +221,7 @@ function add_new_product_to_woocommerce_callback() {
                 'attributes'  => [
                     [
                         'name'        => 'Collection',
-                        'options'     => explode( separator: '|', string: $tag_name ),
+                        'options'     => explode(  '|',  $tag_name ),
                         'position'    => 0,
                         'visible'     => true,
                         'variation'   => true,

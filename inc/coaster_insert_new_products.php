@@ -268,7 +268,6 @@ function add_new_product_to_woocommerce_callback() {
             // Set product details
             wp_set_object_terms( $product_id, 'simple', 'product_type' );
             update_post_meta( $product_id, '_visibility', 'visible' );
-            update_post_meta( $product_id, '_stock_status', 'instock' );
             update_post_meta( $product_id, '_regular_price', $regular_price );
             update_post_meta( $product_id, '_sale_price', $sale_price );
             update_post_meta( $product_id, '_price', $sale_price );
@@ -362,7 +361,6 @@ function add_new_product_to_woocommerce_callback() {
 
                 foreach ( $total_inventory as $inventory ) {
                     // Extract relevant information from the database result
-                    $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
                     $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
 
                     // Update product meta data in WordPress

@@ -202,7 +202,30 @@ function add_new_product_to_woocommerce_callback() {
             // set tag
             wp_set_object_terms( $product_id, $tag_name, 'product_tag', false );
 
-            return "Product Updated Successfully";
+            // Set product stock quantity
+            foreach ( $total_inventory as $inventory ) {
+                // Extract relevant information from the database result
+                $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';
+
+                // Update product meta data in WordPress
+                update_post_meta( $product_id, '_stock', $inventory_qty );
+
+                // display out of stock message if stock is 0
+                if ( $inventory_qty <= 0 ) {
+                    update_post_meta( $product_id, '_stock_status', 'outofstock' );
+                } else {
+                    update_post_meta( $product_id, '_stock_status', 'instock' );
+                }
+                update_post_meta( $product_id, '_manage_stock', 'yes' );
+            }
+
+            // Set product price
+            update_post_meta( $product_id, '_regular_price', $regular_price );
+            update_post_meta( $product_id, '_sale_price', $sale_price );
+            update_post_meta( $product_id, '_price', $sale_price );
+
+
+            return "<h2>Product Updated Successfully</h2>";
 
         } else {
 
@@ -359,6 +382,7 @@ function add_new_product_to_woocommerce_callback() {
                     }
                 }
 
+                // Set product stock quantity
                 foreach ( $total_inventory as $inventory ) {
                     // Extract relevant information from the database result
                     $inventory_qty = isset( $inventory->qty_avail ) ? $inventory->qty_avail : '';

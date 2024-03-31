@@ -61,7 +61,6 @@ function add_new_product_to_woocommerce_callback() {
 
         $category_code    = isset( $product_data['CategoryCode'] ) ? $product_data['CategoryCode'] : '';
         $subcategory_code = isset( $product_data['SubCategoryCode'] ) ? $product_data['SubCategoryCode'] : '';
-        $piece_code       = isset( $product_data['PieceCode'] ) ? $product_data['PieceCode'] : '';
 
         // Extract additional infestations
         $upc          = isset( $product_data['UPC'] ) ? $product_data['UPC'] : '';
@@ -86,14 +85,19 @@ function add_new_product_to_woocommerce_callback() {
 
             if ( $subcategory instanceof WP_Term && $subcategory->description === $subcategory_code ) {
                 $subcategory_name = $subcategory->name; // Return the category name if code matches
-                $subcategory_id   = $subcategory->term_id;
             }
         }
+
+        // Fetch inventory information from the database
+        $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" );
 
         // Retrieve the price from the separate table based on product_number
         $price_row = $wpdb->get_row(
             $wpdb->prepare( "SELECT * FROM $table_name_prices WHERE product_number = %s LIMIT 1", $sku )
         );
+
+        // Get collection information
+        $collections = $wpdb->get_results( "SELECT * FROM $table_name_collection WHERE collection_code = '$collection_code' LIMIT 1" );
 
         // Extract price details from the database record
         $base_regular_price = $price_row->map;
@@ -107,9 +111,6 @@ function add_new_product_to_woocommerce_callback() {
         // Calculate the new regular price and sale price with specified percentages
         $regular_price = round( $base_regular_price * 1.12 ); // Increase by 12%
         $sale_price    = round( $base_regular_price * 1.024 ); // Increase by 2.4%
-
-        // Get collection information
-        $collections = $wpdb->get_results( "SELECT * FROM $table_name_collection WHERE collection_code = '$collection_code' LIMIT 1" );
 
         $collection_name = '';
         if ( !empty( $collections ) && is_array( $collections ) ) {
@@ -359,9 +360,6 @@ function add_new_product_to_woocommerce_callback() {
                     }
                 }
 
-                // Fetch inventory information from the database
-                $total_inventory = $wpdb->get_results( "SELECT * FROM $table_name_inventory WHERE product_number = '$sku'" );
-
                 foreach ( $total_inventory as $inventory ) {
                     // Extract relevant information from the database result
                     $Product_num   = isset( $inventory->product_number ) ? $inventory->product_number : '';
@@ -380,7 +378,7 @@ function add_new_product_to_woocommerce_callback() {
                 }
             }
         }
-        
+
     }
 
     // Output success message

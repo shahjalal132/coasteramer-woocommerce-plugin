@@ -4,7 +4,7 @@ require_once COASTERAMER_PLUGIN_PATH . '/vendor/autoload.php';
 use Automattic\WooCommerce\Client;
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'coasteramer/v1', '/sync-product', array(
+    register_rest_route( 'coasteramer/v1', '/sync-product', array (
         'methods'  => 'GET',
         'callback' => 'add_new_product_to_woocommerce_callback',
     ) );
@@ -169,7 +169,7 @@ function add_new_product_to_woocommerce_callback() {
                 'attributes'  => [
                     [
                         'name'        => 'Collection',
-                        'options'     => explode(  '|',  $tag_name ),
+                        'options'     => explode( '|', $tag_name ),
                         'position'    => 0,
                         'visible'     => true,
                         'variation'   => true,
@@ -201,7 +201,7 @@ function add_new_product_to_woocommerce_callback() {
             // set tag
             wp_set_object_terms( $product_id, $tag_name, 'product_tag', false );
 
-            return ["Product Updated Successfully"];
+            return "Product Updated Successfully";
 
         } else {
 
@@ -221,7 +221,7 @@ function add_new_product_to_woocommerce_callback() {
                 'attributes'  => [
                     [
                         'name'        => 'Collection',
-                        'options'     => explode(  '|',  $tag_name ),
+                        'options'     => explode( '|', $tag_name ),
                         'position'    => 0,
                         'visible'     => true,
                         'variation'   => true,
@@ -378,27 +378,9 @@ function add_new_product_to_woocommerce_callback() {
                     }
                     update_post_meta( $product_id, '_manage_stock', 'yes' );
                 }
-
-                // Mark the inventory update as completed in the database
-                $wpdb->update(
-                    $table_name_inventory,
-                    [ 'status' => 'completed' ],
-                    [ 'product_number' => $Product_num ]
-                );
             }
         }
-
-        // Flush WooCommerce transients
-        delete_transient( 'wc_products_onsale' );
-        delete_transient( 'wc_var_prices_' . md5( implode( ',', array_keys( $products ) ) ) );
-        wc_delete_product_transients();
-
-        // Clear WordPress object cache
-        // wp_cache_clear();
-
-        if ( function_exists( 'w3tc_flush_all' ) ) {
-            w3tc_flush_all();
-        }
+        
     }
 
     // Output success message

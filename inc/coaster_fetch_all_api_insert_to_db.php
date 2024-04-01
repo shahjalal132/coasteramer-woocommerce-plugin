@@ -139,7 +139,7 @@ function get_inventory_api() {
  * @param array $atts Shortcode attributes (unused)
  * @return string HTML message indicating the result of the import
  */
-function coaster_inventory_shortcode( $atts = [] ) {
+function coaster_inventory_shortcode() {
     ob_start();
 
     // Get inventory data from the API

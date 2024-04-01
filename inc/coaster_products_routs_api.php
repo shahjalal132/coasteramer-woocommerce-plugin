@@ -23,6 +23,12 @@ function coaster_products_api() {
         'callback' => 'coaster_price_api_callback',
     ] );
 
+    // insert or update 5 products
+    register_rest_route( 'coasteramer/v1', '/iu-product', [
+        'methods'  => 'GET',
+        'callback' => 'update_product',
+    ] );
+
 }
 
 // callback function for api endpoint to get products from api and add them to database
@@ -36,4 +42,11 @@ function coaster_inventory_api_callback() {
 
 function coaster_price_api_callback() {
     return insert_price_to_db_callback();
+}
+
+function update_product() {
+    for ( $i = 0; $i < 6; $i++ ) {
+        add_new_product_to_woocommerce_callback();
+        echo '<h2>Product Inserted/Updated</h2>';
+    }
 }

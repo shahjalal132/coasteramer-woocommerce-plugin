@@ -25,7 +25,6 @@ function coaster_products_api() {
 
 }
 
-// callback function for api endpoint to get products from api and add them to database
 function coaster_products_api_callback( $request ) {
     return insert_products_to_db_callback();
 }

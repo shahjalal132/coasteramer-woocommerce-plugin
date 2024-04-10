@@ -100,17 +100,11 @@ function add_new_product_to_woocommerce_callback() {
         $collections = $wpdb->get_results( "SELECT * FROM $table_name_collection WHERE collection_code = '$collection_code' LIMIT 1" );
 
         // Extract price details from the database record
-        $base_regular_price = $price_row->map;
         $db_regular_price   = $price_row->price;
 
-        // If product map is 0, use $db_regular_price as regular price
-        if ( $base_regular_price == 0 ) {
-            $base_regular_price = $db_regular_price;
-        }
-
         // Calculate the new regular price and sale price with specified percentages
-        $regular_price = round( $base_regular_price * 1.12 ); // Increase by 12%
-        $sale_price    = round( $base_regular_price * 1.024 ); // Increase by 2.4%
+        $regular_price = round( $db_regular_price * 2.25); // Increase multiply by 2.25
+        $sale_price    = round( $db_regular_price *  2.1); // Increase by 2.1
 
         $collection_name = '';
         if ( !empty( $collections ) && is_array( $collections ) ) {

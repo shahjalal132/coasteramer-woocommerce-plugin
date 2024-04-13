@@ -100,11 +100,11 @@ function add_new_product_to_woocommerce_callback() {
         $collections = $wpdb->get_results( "SELECT * FROM $table_name_collection WHERE collection_code = '$collection_code' LIMIT 1" );
 
         // Extract price details from the database record
-        $db_regular_price   = $price_row->price;
+        $db_regular_price = $price_row->price;
 
         // Calculate the new regular price and sale price with specified percentages
-        $regular_price = round( $db_regular_price * 2.25); // Increase multiply by 2.25
-        $sale_price    = round( $db_regular_price *  2.1); // Increase by 2.1
+        $regular_price = round( $db_regular_price * 2.25 ); // Increase multiply by 2.25
+        $sale_price    = round( $db_regular_price * 2.1 ); // Increase by 2.1
 
         $collection_name = '';
         if ( !empty( $collections ) && is_array( $collections ) ) {
@@ -210,8 +210,10 @@ function add_new_product_to_woocommerce_callback() {
                 } else {
                     update_post_meta( $product_id, '_stock_status', 'instock' );
                 }
-                update_post_meta( $product_id, '_manage_stock', 'yes' );
             }
+
+            // Enable product stock management
+            update_post_meta( $product_id, '_manage_stock', 'yes' );
 
             // Set product price
             update_post_meta( $product_id, '_regular_price', $regular_price );
@@ -390,8 +392,10 @@ function add_new_product_to_woocommerce_callback() {
                     } else {
                         update_post_meta( $product_id, '_stock_status', 'instock' );
                     }
-                    update_post_meta( $product_id, '_manage_stock', 'yes' );
                 }
+
+                // Enable product stock management
+                update_post_meta( $product_id, '_manage_stock', 'yes' );
             }
         }
 
